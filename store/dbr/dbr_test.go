@@ -8,7 +8,7 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/system18188/jupiter-plugin/store/dbr/dialect"
+	"jupiter-plugin/store/dbr/dialect"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/require"
