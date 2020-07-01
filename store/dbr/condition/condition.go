@@ -1,7 +1,7 @@
 package bd
 
 import (
-	"github.com/system18188/jupiter-plugin/store/dbr"
+	"jupiter-plugin/store/dbr"
 )
 
 type Builder interface {

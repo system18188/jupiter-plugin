@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="897e8b09-7e32-42a3-8aee-e762d7331d6c" name="默认更改列表" comment="">
-      <change beforePath="$PROJECT_DIR$/store/dbr/dbr.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/dbr.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/dialect/postgresql.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/dialect/postgresql.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/condition/condition.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/condition/condition.go" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,16 +12,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/store/dbr/errors.go">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/store/dbr/dialect.go">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/store/dbr/delete.go">
           <provider selected="true" editor-type-id="text-editor">
@@ -41,13 +30,37 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/store/dbr/dbr.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="525">
-              <caret line="25" column="25" lean-forward="true" selection-start-line="25" selection-start-column="25" selection-end-line="25" selection-end-column="25" />
+            <state relative-caret-position="1071">
+              <caret line="51" column="34" selection-start-line="51" selection-start-column="34" selection-end-line="51" selection-end-column="34" />
               <folding>
                 <element signature="e#112#224#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/store/dbr/condition.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="42">
+              <caret line="2" column="7" lean-forward="true" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
+              <folding>
+                <element signature="e#13#34#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/store/dbr/condition/condition.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="420">
+              <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
+              <folding>
+                <element signature="e#12#73#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -139,7 +152,6 @@
         <option value="$PROJECT_DIR$/store/dbr/select.go" />
         <option value="$PROJECT_DIR$/store/dbr/insert.go" />
         <option value="$PROJECT_DIR$/store/dbr/dialect.go" />
-        <option value="$PROJECT_DIR$/store/dbr/condition/condition.go" />
         <option value="$PROJECT_DIR$/store/dbr/config.go" />
         <option value="$PROJECT_DIR$/store/dbr/event_jupiter.go" />
         <option value="$PROJECT_DIR$/go.mod" />
@@ -159,6 +171,7 @@
         <option value="$PROJECT_DIR$/store/dbr/update_test.go" />
         <option value="$PROJECT_DIR$/store/dbr/dbr.go" />
         <option value="$PROJECT_DIR$/store/dbr/dialect/postgresql.go" />
+        <option value="$PROJECT_DIR$/store/dbr/condition/condition.go" />
       </list>
     </option>
   </component>
@@ -215,6 +228,13 @@
               <item name="jupiter-plugin" type="462c0819:PsiDirectoryNode" />
               <item name="store" type="462c0819:PsiDirectoryNode" />
               <item name="dbr" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="jupiter-plugin" type="b2602c69:ProjectViewProjectNode" />
+              <item name="jupiter-plugin" type="462c0819:PsiDirectoryNode" />
+              <item name="store" type="462c0819:PsiDirectoryNode" />
+              <item name="dbr" type="462c0819:PsiDirectoryNode" />
+              <item name="condition" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="jupiter-plugin" type="b2602c69:ProjectViewProjectNode" />
@@ -301,20 +321,6 @@
     <integration-enabled>true</integration-enabled>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/go.sum">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="21">
-          <caret line="391" column="35" lean-forward="true" selection-start-line="391" selection-start-column="35" selection-end-line="391" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="42">
-          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/go.mod">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="294">
@@ -634,10 +640,30 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/store/dbr/dbr.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="25" column="25" lean-forward="true" selection-start-line="25" selection-start-column="25" selection-end-line="25" selection-end-column="25" />
+        <state relative-caret-position="1071">
+          <caret line="51" column="34" selection-start-line="51" selection-start-column="34" selection-end-line="51" selection-end-column="34" />
           <folding>
             <element signature="e#112#224#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/condition.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="42">
+          <caret line="2" column="7" lean-forward="true" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
+          <folding>
+            <element signature="e#13#34#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/condition/condition.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="20" lean-forward="true" selection-start-line="20" selection-end-line="20" />
+          <folding>
+            <element signature="e#12#73#0" expanded="true" />
           </folding>
         </state>
       </provider>
