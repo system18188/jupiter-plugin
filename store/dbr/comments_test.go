@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/system18188/jupiter-plugin/store/dbr/dialect"
+	"jupiter-plugin/store/dbr/dialect"
 	"github.com/stretchr/testify/require"
 )
 

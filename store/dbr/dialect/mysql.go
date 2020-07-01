@@ -8,6 +8,10 @@ import (
 
 type mysql struct{}
 
+func (d mysql) OnConflict(constraint string) string {
+	panic("implement me")
+}
+
 func (d mysql) QuoteIdent(s string) string {
 	return quoteIdent(s, "`")
 }
