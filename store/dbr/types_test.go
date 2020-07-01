@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"jupiter-plugin/store/dbr/dialect"
+	"github.com/system18188/jupiter-plugin/store/dbr/dialect"
 	"github.com/stretchr/testify/require"
 )
 
