@@ -8,6 +8,10 @@ import (
 
 type postgreSQL struct{}
 
+func (d postgreSQL) OnConflict(constraint string) string {
+	panic("implement me")
+}
+
 func (d postgreSQL) QuoteIdent(s string) string {
 	return quoteIdent(s, `"`)
 }

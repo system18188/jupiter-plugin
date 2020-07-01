@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/system18188/jupiter-plugin/store/dbr/dialect"
+	"jupiter-plugin/store/dbr/dialect"
 )
 
 // Open creates a Connection.
