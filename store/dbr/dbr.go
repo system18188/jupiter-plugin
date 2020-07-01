@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gocraft/dbr/v2/dialect"
+	"github.com/system18188/jupiter-plugin/store/dbr/dialect"
 )
 
 // Open creates a Connection.
