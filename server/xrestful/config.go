@@ -83,7 +83,7 @@ func (config *Config) Build() *Server {
 	}
 
 	if config.EnableGzip {
-		server.EnableContentEncoding(true)
+		server.Container.EnableContentEncoding(true)
 	}
 	return server
 }
