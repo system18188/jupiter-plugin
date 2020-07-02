@@ -11,13 +11,15 @@ import (
 // Config HTTP config
 type Config struct {
 	// 绑定地址
-	Host          string `json:"host" toml:"host"`
+	Host string `json:"host" toml:"host"`
 	// 绑定端口
-	Port          int    `json:"port" toml:"port"`
+	Port int `json:"port" toml:"port"`
 	// 测量请求响应时间
-	DisableMetric bool   `json:"disableMetric" toml:"disableMetric"`
+	DisableMetric bool `json:"disableMetric" toml:"disableMetric"`
 	// 跟踪
-	DisableTrace  bool   `json:"disableTrace" toml:"disableTrace"`
+	DisableTrace bool `json:"disableTrace" toml:"disableTrace"`
+	// 开启gzip 压缩
+	EnableGzip bool `json:"enableGzip" toml:"enableGzip"`
 
 	SlowQueryThresholdInMilli int64 `json:"slowQueryThresholdInMilli" toml:"slowQueryThresholdInMilli"`
 
@@ -78,6 +80,10 @@ func (config *Config) Build() *Server {
 
 	if !config.DisableTrace {
 		server.Filter(traceServerInterceptor())
+	}
+
+	if config.EnableGzip {
+		server.EnableContentEncoding(true)
 	}
 	return server
 }
