@@ -10,12 +10,16 @@ import (
 
 // Config HTTP config
 type Config struct {
-	Host          string
-	Port          int
-	DisableMetric bool
-	DisableTrace  bool
+	// 绑定地址
+	Host          string `json:"host" toml:"host"`
+	// 绑定端口
+	Port          int    `json:"port" toml:"port"`
+	// 测量请求响应时间
+	DisableMetric bool   `json:"disableMetric" toml:"disableMetric"`
+	// 跟踪
+	DisableTrace  bool   `json:"disableTrace" toml:"disableTrace"`
 
-	SlowQueryThresholdInMilli int64
+	SlowQueryThresholdInMilli int64 `json:"slowQueryThresholdInMilli" toml:"slowQueryThresholdInMilli"`
 
 	logger *xlog.Logger
 }

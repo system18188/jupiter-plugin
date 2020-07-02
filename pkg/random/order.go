@@ -17,7 +17,7 @@ var (
 )
 
 // 时间订单号 年两位，天三位，时分秒6位，毫秒6位 （17位 + 随机数）
-func TimeOrdern(n int) string {
+func TimeOrderStr(n int) string {
 	now := time.Now()
 	order := now.Format("06-150405.999999999")
 	order = Remove(order, ".") // 删除点号
@@ -34,7 +34,7 @@ func TimeOrdern(n int) string {
 }
 
 // 生成随机数字
-func Intn(n int) int {
+func IntN(n int) int {
 	rdinit()
 	return rd.Intn(n)
 }
@@ -44,7 +44,7 @@ func rdinit() {
 }
 
 // 格式 1076459955600494592
-func GetID() string {
+func NodeStr() string {
 	nodeinit()
 	return node.Generate().String()
 }
