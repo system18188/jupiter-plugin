@@ -3,8 +3,8 @@ package binding
 import (
 	"errors"
 	"fmt"
-	"jupiter-plugin/pkg/filepath"
-	"jupiter-plugin/pkg/random"
+	"github.com/system18188/jupiter-plugin/pkg/filepath"
+	"github.com/system18188/jupiter-plugin/pkg/random"
 	"io"
 	"mime/multipart"
 	"os"

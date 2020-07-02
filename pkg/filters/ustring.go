@@ -2,7 +2,7 @@ package filters
 
 import (
 	"bytes"
-	"jupiter-plugin/pkg/check"
+	"github.com/system18188/jupiter-plugin/pkg/check"
 	"strings"
 )
 

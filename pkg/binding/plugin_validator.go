@@ -1,7 +1,7 @@
 package binding
 
 import (
-	"jupiter-plugin/pkg/check"
+	"github.com/system18188/jupiter-plugin/pkg/check"
 	"gopkg.in/go-playground/validator.v9"
 )
 

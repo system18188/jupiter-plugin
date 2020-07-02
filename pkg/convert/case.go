@@ -2,7 +2,7 @@ package convert
 
 import (
 	"bytes"
-	"jupiter-plugin/pkg/filters"
+	"github.com/system18188/jupiter-plugin/pkg/filters"
 	"strings"
 	"unicode"
 )

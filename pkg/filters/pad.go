@@ -1,7 +1,7 @@
 package filters
 
 import (
-	"jupiter-plugin/pkg/check"
+	"github.com/system18188/jupiter-plugin/pkg/check"
 	"strings"
 )
 

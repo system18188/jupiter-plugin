@@ -3,7 +3,7 @@ package filters
 
 import (
 	"bytes"
-	"jupiter-plugin/pkg/check"
+	"github.com/system18188/jupiter-plugin/pkg/check"
 )
 
 // Abbr abbreviate a String using ellipses.

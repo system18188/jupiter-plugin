@@ -1,7 +1,7 @@
 package filters_test
 
 import (
-	"jupiter-plugin/pkg/filters"
+	"github.com/system18188/jupiter-plugin/pkg/filters"
 	"testing"
 )
 

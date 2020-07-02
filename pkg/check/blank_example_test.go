@@ -2,7 +2,7 @@ package check_test
 
 import (
 	"fmt"
-	"jupiter-plugin/pkg/check"
+	"github.com/system18188/jupiter-plugin/pkg/check"
 )
 
 func ExampleIsBlank() {

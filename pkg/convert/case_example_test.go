@@ -2,7 +2,7 @@ package convert_test
 
 import (
 	"fmt"
-	"jupiter-plugin/pkg/convert"
+	"github.com/system18188/jupiter-plugin/pkg/convert"
 )
 
 func ExampleToLower() {

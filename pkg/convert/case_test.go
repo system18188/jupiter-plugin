@@ -1,7 +1,7 @@
 package convert_test
 
 import (
-	"jupiter-plugin/pkg/convert"
+	"github.com/system18188/jupiter-plugin/pkg/convert"
 	"testing"
 )
 
