@@ -10,7 +10,7 @@ type InsertBuilder interface {
 	Builder
 	EventReceiver
 	Executer
-	loader
+	LoadStruct(value interface{}) error
 	Columns(column ...string) InsertBuilder
 	Values(value ...interface{}) InsertBuilder
 	Record(structValue interface{}) InsertBuilder
@@ -24,7 +24,6 @@ type InsertBuilder interface {
 type insertBuilder struct {
 	EventReceiver
 	runner
-	loader
 
 	Dialect    Dialect
 	RecordID   reflect.Value
