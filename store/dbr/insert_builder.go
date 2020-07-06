@@ -16,6 +16,7 @@ type InsertBuilder interface {
 	OnConflictMap(constraint string, actions map[string]interface{}) InsertBuilder
 	OnConflict(constraint string) ConflictStmt
 	Pair(column string, value interface{}) InsertBuilder
+	Returning(column ...string) InsertBuilder
 }
 
 // InsertBuilder builds "INSERT ..." stmt
@@ -116,6 +117,11 @@ func (b *insertBuilder) Columns(column ...string) InsertBuilder {
 // Values adds a tuple for columns
 func (b *insertBuilder) Values(value ...interface{}) InsertBuilder {
 	b.insertStmt.Values(value...)
+	return b
+}
+// Returning specifies the returning columns for postgres.
+func (b *insertBuilder) Returning(column ...string) InsertBuilder {
+	b.insertStmt.Returning(column...)
 	return b
 }
 
