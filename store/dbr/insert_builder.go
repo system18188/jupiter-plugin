@@ -102,6 +102,11 @@ func (b *insertBuilder) Exec() (sql.Result, error) {
 	return result, nil
 }
 
+func (b *insertBuilder) Load(value interface{}) error {
+	_, err := query(b.runner, b.EventReceiver, b, b.Dialect, value)
+	return err
+}
+
 // Columns adds columns
 func (b *insertBuilder) Columns(column ...string) InsertBuilder {
 	b.insertStmt.Columns(column...)

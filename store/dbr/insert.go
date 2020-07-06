@@ -30,6 +30,7 @@ type InsertStmt interface {
 	Record(structValue interface{}) InsertStmt
 	OnConflictMap(constraint string, actions map[string]interface{}) InsertStmt
 	OnConflict(constraint string) ConflictStmt
+	Returning(column ...string) InsertStmt
 }
 
 type insertStmt struct {
@@ -38,6 +39,7 @@ type insertStmt struct {
 	Table    string
 	Column   []string
 	Value    [][]interface{}
+	ReturnColumn []string
 	Conflict *conflictStmt
 }
 
@@ -112,6 +114,16 @@ func (b *insertStmt) Build(d Dialect, buf Buffer) error {
 		}
 	}
 
+	if len(b.ReturnColumn) > 0 {
+		buf.WriteString(" RETURNING ")
+		for i, col := range b.ReturnColumn {
+			if i > 0 {
+				buf.WriteString(",")
+			}
+			buf.WriteString(d.QuoteIdent(col))
+		}
+	}
+
 	return nil
 }
 
@@ -181,4 +193,10 @@ func (b *insertStmt) OnConflictMap(constraint string, actions map[string]interfa
 func (b *insertStmt) OnConflict(constraint string) ConflictStmt {
 	b.Conflict = &conflictStmt{constraint: constraint, actions: make(map[string]interface{})}
 	return b.Conflict
+}
+
+// Returning specifies the returning columns for postgres.
+func (b *insertStmt) Returning(column ...string) InsertStmt {
+	b.ReturnColumn = column
+	return b
 }
