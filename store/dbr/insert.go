@@ -1,41 +1,56 @@
 package dbr
 
 import (
-	"context"
-	"database/sql"
+	"bytes"
 	"fmt"
 	"reflect"
-	"strings"
 )
 
 // ConflictStmt is ` ON CONFLICT ...` part of InsertStmt
-type ConflictStmt struct {
+type ConflictStmt interface {
+	Action(column string, action interface{}) ConflictStmt
+}
+
+type conflictStmt struct {
 	constraint string
 	actions    map[string]interface{}
 }
 
-// InsertStmt builds `INSERT INTO ...`.
-type InsertStmt struct {
-	runner
-	EventReceiver
-	Dialect
-
-	raw
-
-	Table        string
-	Column       []string
-	Value        [][]interface{}
-	Ignored      bool
-	ReturnColumn []string
-	RecordID     *int64
-	comments     Comments
-
-	Conflict *ConflictStmt
+// Action adds action for column which will do if conflict happens
+func (b *conflictStmt) Action(column string, action interface{}) ConflictStmt {
+	b.actions[column] = action
+	return b
 }
 
-type InsertBuilder = InsertStmt
+// InsertStmt builds `INSERT INTO ...`
+type InsertStmt interface {
+	Builder
+	Columns(column ...string) InsertStmt
+	Values(value ...interface{}) InsertStmt
+	Record(structValue interface{}) InsertStmt
+	OnConflictMap(constraint string, actions map[string]interface{}) InsertStmt
+	OnConflict(constraint string) ConflictStmt
+}
 
-func (b *InsertStmt) Build(d Dialect, buf Buffer) error {
+type insertStmt struct {
+	raw
+
+	Table    string
+	Column   []string
+	Value    [][]interface{}
+	Conflict *conflictStmt
+}
+
+// Proposed is reference to proposed value in on conflict clause
+func Proposed(column string) Builder {
+	return BuildFunc(func(d Dialect, b Buffer) error {
+		_, err := b.WriteString(d.Proposed(column))
+		return err
+	})
+}
+
+// Build builds `INSERT INTO ...` in dialect
+func (b *insertStmt) Build(d Dialect, buf Buffer) error {
 	if b.raw.Query != "" {
 		return b.raw.Build(d, buf)
 	}
@@ -48,20 +63,10 @@ func (b *InsertStmt) Build(d Dialect, buf Buffer) error {
 		return ErrColumnNotSpecified
 	}
 
-	err := b.comments.Build(d, buf)
-	if err != nil {
-		return err
-	}
-
-	if b.Ignored {
-		buf.WriteString("INSERT IGNORE INTO ")
-	} else {
-		buf.WriteString("INSERT INTO ")
-	}
-
+	buf.WriteString("INSERT INTO ")
 	buf.WriteString(d.QuoteIdent(b.Table))
 
-	var placeholderBuf strings.Builder
+	placeholderBuf := new(bytes.Buffer)
 	placeholderBuf.WriteString("(")
 	buf.WriteString(" (")
 	for i, col := range b.Column {
@@ -84,7 +89,6 @@ func (b *InsertStmt) Build(d Dialect, buf Buffer) error {
 
 		buf.WriteValue(tuple...)
 	}
-
 	if b.Conflict != nil && len(b.Conflict.actions) > 0 {
 		keyword := d.OnConflict(b.Conflict.constraint)
 		if len(keyword) == 0 {
@@ -108,47 +112,27 @@ func (b *InsertStmt) Build(d Dialect, buf Buffer) error {
 		}
 	}
 
-	if len(b.ReturnColumn) > 0 {
-		buf.WriteString(" RETURNING ")
-		for i, col := range b.ReturnColumn {
-			if i > 0 {
-				buf.WriteString(",")
-			}
-			buf.WriteString(d.QuoteIdent(col))
-		}
-	}
-
 	return nil
 }
 
-// InsertInto creates an InsertStmt.
-func InsertInto(table string) *InsertStmt {
-	return &InsertStmt{
+// InsertInto creates an InsertStmt
+func InsertInto(table string) InsertStmt {
+	return createInsertStmt(table)
+}
+
+func createInsertStmt(table string) *insertStmt {
+	return &insertStmt{
 		Table: table,
 	}
 }
 
-// InsertInto creates an InsertStmt.
-func (sess *Session) InsertInto(table string) *InsertStmt {
-	b := InsertInto(table)
-	b.runner = sess
-	b.EventReceiver = sess.EventReceiver
-	b.Dialect = sess.Dialect
-	return b
+// InsertBySql creates an InsertStmt from raw query
+func InsertBySql(query string, value ...interface{}) InsertStmt {
+	return createInsertStmtBySQL(query, value)
 }
 
-// InsertInto creates an InsertStmt.
-func (tx *Tx) InsertInto(table string) *InsertStmt {
-	b := InsertInto(table)
-	b.runner = tx
-	b.EventReceiver = tx.EventReceiver
-	b.Dialect = tx.Dialect
-	return b
-}
-
-// InsertBySql creates an InsertStmt from raw query.
-func InsertBySql(query string, value ...interface{}) *InsertStmt {
-	return &InsertStmt{
+func createInsertStmtBySQL(query string, value []interface{}) *insertStmt {
+	return &insertStmt{
 		raw: raw{
 			Query: query,
 			Value: value,
@@ -156,74 +140,30 @@ func InsertBySql(query string, value ...interface{}) *InsertStmt {
 	}
 }
 
-// InsertBySql creates an InsertStmt from raw query.
-func (sess *Session) InsertBySql(query string, value ...interface{}) *InsertStmt {
-	b := InsertBySql(query, value...)
-	b.runner = sess
-	b.EventReceiver = sess.EventReceiver
-	b.Dialect = sess.Dialect
+// Columns adds columns
+func (b *insertStmt) Columns(column ...string) InsertStmt {
+	b.Column = append(b.Column, column...)
 	return b
 }
 
-// InsertBySql creates an InsertStmt from raw query.
-func (tx *Tx) InsertBySql(query string, value ...interface{}) *InsertStmt {
-	b := InsertBySql(query, value...)
-	b.runner = tx
-	b.EventReceiver = tx.EventReceiver
-	b.Dialect = tx.Dialect
-	return b
-}
-
-func (b *InsertStmt) Columns(column ...string) *InsertStmt {
-	b.Column = column
-	return b
-}
-
-// Comment adds a comment to prepended. All multi-line sql comment characters are stripped
-func (b *InsertStmt) Comment(comment string) *InsertStmt {
-	b.comments = b.comments.Append(comment)
-	return b
-}
-
-// Ignore any insertion errors
-func (b *InsertStmt) Ignore() *InsertStmt {
-	b.Ignored = true
-	return b
-}
-
-// Values adds a tuple to be inserted.
-// The order of the tuple should match Columns.
-func (b *InsertStmt) Values(value ...interface{}) *InsertStmt {
+// Values adds a tuple for columns
+func (b *insertStmt) Values(value ...interface{}) InsertStmt {
 	b.Value = append(b.Value, value)
 	return b
 }
 
-// Record adds a tuple for columns from a struct.
-//
-// If there is a field called "Id" or "ID" in the struct,
-// it will be set to LastInsertId.
-func (b *InsertStmt) Record(structValue interface{}) *InsertStmt {
+// Record adds a tuple for columns from a struct
+func (b *insertStmt) Record(structValue interface{}) InsertStmt {
 	v := reflect.Indirect(reflect.ValueOf(structValue))
 
 	if v.Kind() == reflect.Struct {
-		found := make([]interface{}, len(b.Column)+1)
-		// ID is recommended by golint here
-		s := newTagStore()
-		s.findValueByName(v, append(b.Column, "id"), found, false)
-
-		value := found[:len(found)-1]
-		for i, v := range value {
-			if v != nil {
-				value[i] = v.(reflect.Value).Interface()
-			}
-		}
-
-		if v.CanSet() {
-			switch idField := found[len(found)-1].(type) {
-			case reflect.Value:
-				if idField.Kind() == reflect.Int64 {
-					b.RecordID = idField.Addr().Interface().(*int64)
-				}
+		var value []interface{}
+		m := structMap(v.Type())
+		for _, key := range b.Column {
+			if index, ok := m[key]; ok {
+				value = append(value, v.FieldByIndex(index).Interface())
+			} else {
+				value = append(value, nil)
 			}
 		}
 		b.Values(value...)
@@ -231,70 +171,14 @@ func (b *InsertStmt) Record(structValue interface{}) *InsertStmt {
 	return b
 }
 
-// Returning specifies the returning columns for postgres.
-func (b *InsertStmt) Returning(column ...string) *InsertStmt {
-	b.ReturnColumn = column
-	return b
-}
-
-
 // OnConflictMap allows to add actions for constraint violation, e.g UPSERT
-func (b *InsertStmt) OnConflictMap(constraint string, actions map[string]interface{}) *InsertStmt {
-	b.Conflict = &ConflictStmt{constraint: constraint, actions: actions}
+func (b *insertStmt) OnConflictMap(constraint string, actions map[string]interface{}) InsertStmt {
+	b.Conflict = &conflictStmt{constraint: constraint, actions: actions}
 	return b
 }
 
 // OnConflict creates an empty OnConflict section fo insert statement , e.g UPSERT
-func (b *InsertStmt) OnConflict(constraint string) *ConflictStmt {
-	return b.OnConflictMap(constraint, make(map[string]interface{})).Conflict
-}
-
-// Action adds action for column which will do if conflict happens
-func (b *ConflictStmt) Action(column string, action interface{}) *ConflictStmt {
-	b.actions[column] = action
-	return b
-}
-
-// Pair adds (column, value) to be inserted.
-// It is an error to mix Pair with Values and Record.
-func (b *InsertStmt) Pair(column string, value interface{}) *InsertStmt {
-	b.Column = append(b.Column, column)
-	switch len(b.Value) {
-	case 0:
-		b.Values(value)
-	case 1:
-		b.Value[0] = append(b.Value[0], value)
-	default:
-		panic("pair only allows one record to insert")
-	}
-	return b
-}
-
-func (b *InsertStmt) Exec() (sql.Result, error) {
-	return b.ExecContext(context.Background())
-}
-
-func (b *InsertStmt) ExecContext(ctx context.Context) (sql.Result, error) {
-	result, err := exec(ctx, b.runner, b.EventReceiver, b, b.Dialect)
-	if err != nil {
-		return nil, err
-	}
-
-	if b.RecordID != nil {
-		if id, err := result.LastInsertId(); err == nil {
-			*b.RecordID = id
-		}
-		b.RecordID = nil
-	}
-
-	return result, nil
-}
-
-func (b *InsertStmt) LoadContext(ctx context.Context, value interface{}) error {
-	_, err := query(ctx, b.runner, b.EventReceiver, b, b.Dialect, value)
-	return err
-}
-
-func (b *InsertStmt) Load(value interface{}) error {
-	return b.LoadContext(context.Background(), value)
+func (b *insertStmt) OnConflict(constraint string) ConflictStmt {
+	b.Conflict = &conflictStmt{constraint: constraint, actions: make(map[string]interface{})}
+	return b.Conflict
 }

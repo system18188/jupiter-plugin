@@ -1,4 +1,3 @@
-// Package dbr provides additions to Go's database/sql for super fast performance and convenience.
 package dbr
 
 import (
@@ -7,11 +6,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/system18188/jupiter-plugin/store/dbr/dialect"
+	"github.com/mailru/dbr/dialect"
 )
 
-// Open creates a Connection.
-// log can be nil to ignore logging.
+// Open instantiates a Connection for a given database/sql connection
+// and event receiver
 func Open(driver, dsn string, log EventReceiver) (*Connection, error) {
 	if log == nil {
 		log = nullReceiver
@@ -24,10 +23,12 @@ func Open(driver, dsn string, log EventReceiver) (*Connection, error) {
 	switch driver {
 	case "mysql":
 		d = dialect.MySQL
-	case "postgres", "pgx":
+	case "postgres":
 		d = dialect.PostgreSQL
 	case "sqlite3":
 		d = dialect.SQLite3
+	case "clickhouse":
+		d = dialect.ClickHouse
 	default:
 		return nil, ErrNotSupported
 	}
@@ -38,85 +39,87 @@ const (
 	placeholder = "?"
 )
 
-// Connection wraps sql.DB with an EventReceiver
-// to send events, errors, and timings.
+// Connection is a connection to the database with an EventReceiver
+// to send events, errors, and timings to
 type Connection struct {
 	*sql.DB
-	Dialect
+	Dialect Dialect
 	EventReceiver
 }
 
-// Session represents a business unit of execution.
-//
-// All queries in gocraft/dbr are made in the context of a session.
-// This is because when instrumenting your app, it's important
-// to understand which business action the query took place in.
-//
-// A custom EventReceiver can be set.
-//
-// Timeout specifies max duration for an operation like Select.
+// Session represents a business unit of execution for some connection
 type Session struct {
 	*Connection
 	EventReceiver
-	Timeout time.Duration
+	ctx context.Context
 }
 
-// GetTimeout returns current timeout enforced in session.
-func (sess *Session) GetTimeout() time.Duration {
-	return sess.Timeout
-}
-
-// NewSession instantiates a Session from Connection.
-// If log is nil, Connection EventReceiver is used.
+// NewSession instantiates a Session for the Connection
 func (conn *Connection) NewSession(log EventReceiver) *Session {
+	return conn.NewSessionContext(context.Background(), log)
+}
+
+// NewSessionContext instantiates a Session with context for the Connection
+func (conn *Connection) NewSessionContext(ctx context.Context, log EventReceiver) *Session {
 	if log == nil {
 		log = conn.EventReceiver // Use parent instrumentation
 	}
-	return &Session{Connection: conn, EventReceiver: log}
+	return &Session{Connection: conn, EventReceiver: log, ctx: ctx}
 }
 
-// Ensure that tx and session are session runner
-var (
-	_ SessionRunner = (*Tx)(nil)
-	_ SessionRunner = (*Session)(nil)
-)
+// NewSession forks current session
+func (sess *Session) NewSession(log EventReceiver) *Session {
+	if log == nil {
+		log = sess.EventReceiver
+	}
+	return &Session{Connection: sess.Connection, EventReceiver: log, ctx: sess.ctx}
+}
+
+// beginTx starts a transaction with context.
+func (conn *Connection) beginTx() (*sql.Tx, error) {
+	return conn.Begin()
+}
 
 // SessionRunner can do anything that a Session can except start a transaction.
-// Both Session and Tx implements this interface.
 type SessionRunner interface {
-	Select(column ...string) *SelectBuilder
-	SelectBySql(query string, value ...interface{}) *SelectBuilder
+	Select(column ...string) SelectBuilder
+	SelectBySql(query string, value ...interface{}) SelectBuilder
 
-	InsertInto(table string) *InsertBuilder
-	InsertBySql(query string, value ...interface{}) *InsertBuilder
+	InsertInto(table string) InsertBuilder
+	InsertBySql(query string, value ...interface{}) InsertBuilder
 
-	Update(table string) *UpdateBuilder
-	UpdateBySql(query string, value ...interface{}) *UpdateBuilder
+	Update(table string) UpdateBuilder
+	UpdateBySql(query string, value ...interface{}) UpdateBuilder
 
-	DeleteFrom(table string) *DeleteBuilder
-	DeleteBySql(query string, value ...interface{}) *DeleteBuilder
+	DeleteFrom(table string) DeleteBuilder
+	DeleteBySql(query string, value ...interface{}) DeleteBuilder
 }
 
 type runner interface {
-	GetTimeout() time.Duration
-	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
-	QueryContext(ctx context.Context, query string, args ...interface{}) (*sql.Rows, error)
+	Exec(query string, args ...interface{}) (sql.Result, error)
+	Query(query string, args ...interface{}) (*sql.Rows, error)
 }
 
-func exec(ctx context.Context, runner runner, log EventReceiver, builder Builder, d Dialect) (sql.Result, error) {
-	timeout := runner.GetTimeout()
-	if timeout > 0 {
-		var cancel func()
-		ctx, cancel = context.WithTimeout(ctx, timeout)
-		defer cancel()
-	}
+// Executer can execute requests to database
+type Executer interface {
+	Exec() (sql.Result, error)
+}
 
+type loader interface {
+	Load(value interface{}) (int, error)
+	LoadStruct(value interface{}) error
+	LoadStructs(value interface{}) (int, error)
+	LoadValue(value interface{}) error
+	LoadValues(value interface{}) (int, error)
+}
+
+func exec(runner runner, log EventReceiver, builder Builder, d Dialect) (sql.Result, error) {
 	i := interpolator{
 		Buffer:       NewBuffer(),
 		Dialect:      d,
 		IgnoreBinary: true,
 	}
-	err := i.encodePlaceholder(builder, true)
+	err := i.interpolate(placeholder, []interface{}{builder})
 	query, value := i.String(), i.Value()
 	if err != nil {
 		return nil, log.EventErrKv("dbr.exec.interpolate", err, kvs{
@@ -132,17 +135,8 @@ func exec(ctx context.Context, runner runner, log EventReceiver, builder Builder
 		})
 	}()
 
-	traceImpl, hasTracingImpl := log.(TracingEventReceiver)
-	if hasTracingImpl {
-		ctx = traceImpl.SpanStart(ctx, "dbr.exec", query)
-		defer traceImpl.SpanFinish(ctx)
-	}
-
-	result, err := runner.ExecContext(ctx, query, value...)
+	result, err := runner.Exec(query, value...)
 	if err != nil {
-		if hasTracingImpl {
-			traceImpl.SpanError(ctx, err)
-		}
 		return result, log.EventErrKv("dbr.exec.exec", err, kvs{
 			"sql": query,
 		})
@@ -150,19 +144,16 @@ func exec(ctx context.Context, runner runner, log EventReceiver, builder Builder
 	return result, nil
 }
 
-func queryRows(ctx context.Context, runner runner, log EventReceiver, builder Builder, d Dialect) (string, *sql.Rows, error) {
-	// discard the timeout set in the runner, the context should not be canceled
-	// implicitly here but explicitly by the caller since the returned *sql.Rows
-	// may still listening to the context
+func query(runner runner, log EventReceiver, builder Builder, d Dialect, dest interface{}) (int, error) {
 	i := interpolator{
 		Buffer:       NewBuffer(),
 		Dialect:      d,
 		IgnoreBinary: true,
 	}
-	err := i.encodePlaceholder(builder, true)
+	err := i.interpolate(placeholder, []interface{}{builder})
 	query, value := i.String(), i.Value()
 	if err != nil {
-		return query, nil, log.EventErrKv("dbr.select.interpolate", err, kvs{
+		return 0, log.EventErrKv("dbr.select.interpolate", err, kvs{
 			"sql":  query,
 			"args": fmt.Sprint(value),
 		})
@@ -175,36 +166,11 @@ func queryRows(ctx context.Context, runner runner, log EventReceiver, builder Bu
 		})
 	}()
 
-	traceImpl, hasTracingImpl := log.(TracingEventReceiver)
-	if hasTracingImpl {
-		ctx = traceImpl.SpanStart(ctx, "dbr.select", query)
-		defer traceImpl.SpanFinish(ctx)
-	}
-
-	rows, err := runner.QueryContext(ctx, query, value...)
+	rows, err := runner.Query(query, value...)
 	if err != nil {
-		if hasTracingImpl {
-			traceImpl.SpanError(ctx, err)
-		}
-		return query, nil, log.EventErrKv("dbr.select.load.query", err, kvs{
+		return 0, log.EventErrKv("dbr.select.load.query", err, kvs{
 			"sql": query,
 		})
-	}
-
-	return query, rows, nil
-}
-
-func query(ctx context.Context, runner runner, log EventReceiver, builder Builder, d Dialect, dest interface{}) (int, error) {
-	timeout := runner.GetTimeout()
-	if timeout > 0 {
-		var cancel func()
-		ctx, cancel = context.WithTimeout(ctx, timeout)
-		defer cancel()
-	}
-
-	query, rows, err := queryRows(ctx, runner, log, builder, d)
-	if err != nil {
-		return 0, err
 	}
 	count, err := Load(rows, dest)
 	if err != nil {

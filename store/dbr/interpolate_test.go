@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/system18188/jupiter-plugin/store/dbr/dialect"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInterpolateIgnoreBinary(t *testing.T) {
@@ -47,11 +47,11 @@ func TestInterpolateIgnoreBinary(t *testing.T) {
 			IgnoreBinary: true,
 		}
 
-		err := i.interpolate(test.query, test.value, true)
-		require.NoError(t, err)
+		err := i.interpolate(test.query, test.value)
+		assert.NoError(t, err)
 
-		require.Equal(t, test.wantQuery, i.String())
-		require.Equal(t, test.wantValue, i.Value())
+		assert.Equal(t, test.wantQuery, i.String())
+		assert.Equal(t, test.wantValue, i.Value())
 	}
 }
 
@@ -93,6 +93,11 @@ func TestInterpolateForDialect(t *testing.T) {
 		},
 		{
 			query: "?",
+			value: []interface{}{map[string]bool{"one": true, "two": false}},
+			want:  "('one','two')",
+		},
+		{
+			query: "?",
 			value: []interface{}{[]byte{0x1, 0x2, 0x3}},
 			want:  "0x010203",
 		},
@@ -104,7 +109,7 @@ func TestInterpolateForDialect(t *testing.T) {
 		{
 			query: "?",
 			value: []interface{}{Select("a").From("table")},
-			want:  "SELECT a FROM table",
+			want:  "(SELECT a FROM table)",
 		},
 		{
 			query: "?",
@@ -124,9 +129,7 @@ func TestInterpolateForDialect(t *testing.T) {
 					Select("b").From("table2"),
 				).As("t"),
 			},
-			// parentheses around union subqueries are not supported in sqlite
-			// but supported in both mysql and postgres.
-			want: "(SELECT a FROM table1 UNION ALL SELECT b FROM table2) AS `t`",
+			want: "((SELECT a FROM table1) UNION ALL (SELECT b FROM table2)) AS `t`",
 		},
 		{
 			query: "?",
@@ -138,20 +141,10 @@ func TestInterpolateForDialect(t *testing.T) {
 			value: []interface{}{(*int64)(nil)},
 			want:  "NULL",
 		},
-		{
-			query: "???? ? ?? ? ??",
-			value: []interface{}{1, 2},
-			want:  "?? 1 ? 2 ?",
-		},
-		{
-			query: "???",
-			value: []interface{}{1},
-			want:  "?1",
-		},
 	} {
 		s, err := InterpolateForDialect(test.query, test.value, dialect.MySQL)
-		require.NoError(t, err)
-		require.Equal(t, test.want, s)
+		assert.NoError(t, err)
+		assert.Equal(t, test.want, s)
 	}
 }
 
@@ -159,20 +152,19 @@ func TestInterpolateForDialect(t *testing.T) {
 // more information on the source and the strings themselves.
 func TestCommonSQLInjections(t *testing.T) {
 	for _, sess := range testSession {
-		reset(t, sess)
-
 		for _, injectionAttempt := range strings.Split(injectionAttempts, "\n") {
 			// Create a user with the attempted injection as the email address
+			id := nextID()
 			_, err := sess.InsertInto("dbr_people").
 				Pair("name", injectionAttempt).
+				Pair("id", id).
 				Exec()
-			require.NoError(t, err)
+			assert.NoError(t, err)
 
 			// SELECT the name back and ensure it's equal to the injection attempt
 			var name string
-			err = sess.Select("name").From("dbr_people").OrderDesc("id").Limit(1).LoadOne(&name)
-			require.NoError(t, err)
-			require.Equal(t, injectionAttempt, name)
+			err = sess.Select("name").From("dbr_people").Where(Eq("id", id)).LoadValue(&name)
+			assert.Equal(t, injectionAttempt, name)
 		}
 	}
 }

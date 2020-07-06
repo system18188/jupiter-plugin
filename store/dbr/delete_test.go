@@ -3,17 +3,17 @@ package dbr
 import (
 	"testing"
 
-	"github.com/system18188/jupiter-plugin/store/dbr/dialect"
-	"github.com/stretchr/testify/require"
+	"github.com/mailru/dbr/dialect"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestDeleteStmt(t *testing.T) {
 	buf := NewBuffer()
-	builder := DeleteFrom("table").Where(Eq("a", 1)).Comment("DELETE TEST")
+	builder := DeleteFrom("table").Where(Eq("a", 1))
 	err := builder.Build(dialect.MySQL, buf)
-	require.NoError(t, err)
-	require.Equal(t, "/* DELETE TEST */\nDELETE FROM `table` WHERE (`a` = ?)", buf.String())
-	require.Equal(t, []interface{}{1}, buf.Value())
+	assert.NoError(t, err)
+	assert.Equal(t, "DELETE FROM `table` WHERE (`a` = ?)", buf.String())
+	assert.Equal(t, []interface{}{1}, buf.Value())
 }
 
 func BenchmarkDeleteSQL(b *testing.B) {

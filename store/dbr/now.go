@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// Now is a value that serializes to the current time in UTC.
+// Now is a value that serializes to the current time
 var Now = nowSentinel{}
 
 const timeFormat = "2006-01-02 15:04:05.000000"

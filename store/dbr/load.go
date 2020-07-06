@@ -2,32 +2,11 @@ package dbr
 
 import (
 	"database/sql"
+	"fmt"
 	"reflect"
 )
 
-type interfaceLoader struct {
-	v   interface{}
-	typ reflect.Type
-}
-
-func InterfaceLoader(value interface{}, concreteType interface{}) interface{} {
-	return interfaceLoader{value, reflect.TypeOf(concreteType)}
-}
-
-// Load loads any value from sql.Rows.
-//
-// value can be:
-//
-// 1. simple type like int64, string, etc.
-//
-// 2. sql.Scanner, which allows loading with custom types.
-//
-// 3. map; the first column from SQL result loaded to the key,
-// and the rest of columns will be loaded into the value.
-// This is useful to dedup SQL result with first column.
-//
-// 4. map of slice; like map, values with the same key are
-// collected with a slice.
+// Load loads any value from sql.Rows
 func Load(rows *sql.Rows, value interface{}) (int, error) {
 	defer rows.Close()
 
@@ -35,101 +14,44 @@ func Load(rows *sql.Rows, value interface{}) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	ptr := make([]interface{}, len(column))
 
-	var v reflect.Value
-	var elemType reflect.Type
-
-	if il, ok := value.(interfaceLoader); ok {
-		v = reflect.ValueOf(il.v)
-		elemType = il.typ
-	} else {
-		v = reflect.ValueOf(value)
-	}
-
+	v := reflect.ValueOf(value)
 	if v.Kind() != reflect.Ptr || v.IsNil() {
 		return 0, ErrInvalidPointer
 	}
 	v = v.Elem()
-	isScanner := v.Addr().Type().Implements(typeScanner)
-	isSlice := v.Kind() == reflect.Slice && v.Type().Elem().Kind() != reflect.Uint8 && !isScanner
-	isMap := v.Kind() == reflect.Map && !isScanner
-	isMapOfSlices := isMap && v.Type().Elem().Kind() == reflect.Slice && v.Type().Elem().Elem().Kind() != reflect.Uint8
-	if isMap {
-		v.Set(reflect.MakeMap(v.Type()))
-	}
-
-	s := newTagStore()
+	isSlice := v.Kind() == reflect.Slice && v.Type().Elem().Kind() != reflect.Uint8
 	count := 0
+	var elemType reflect.Type
+	if isSlice {
+		elemType = v.Type().Elem()
+	} else {
+		elemType = v.Type()
+	}
+	extractor, err := findExtractor(elemType)
+	if err != nil {
+		return count, err
+	}
 	for rows.Next() {
-		var elem, keyElem reflect.Value
-
-		if elemType != nil {
-			elem = reflectAlloc(elemType)
-		} else if isMapOfSlices {
-			elem = reflectAlloc(v.Type().Elem().Elem())
-		} else if isSlice || isMap {
-			elem = reflectAlloc(v.Type().Elem())
+		var elem reflect.Value
+		if isSlice {
+			elem = reflect.New(v.Type().Elem()).Elem()
 		} else {
 			elem = v
 		}
-
-		if isMap {
-			err := s.findPtr(elem, column[1:], ptr[1:])
-			if err != nil {
-				return 0, err
-			}
-			keyElem = reflectAlloc(v.Type().Key())
-			err = s.findPtr(keyElem, column[:1], ptr[:1])
-			if err != nil {
-				return 0, err
-			}
-		} else {
-			err := s.findPtr(elem, column, ptr)
-			if err != nil {
-				return 0, err
-			}
-		}
-
-		// Before scanning, set nil pointer to dummy dest.
-		// After that, reset pointers to nil for the next batch.
-		for i := range ptr {
-			if ptr[i] == nil {
-				ptr[i] = dummyDest
-			}
-		}
+		ptr := extractor(column, elem)
 		err = rows.Scan(ptr...)
 		if err != nil {
-			return 0, err
+			return count, err
 		}
-		for i := range ptr {
-			ptr[i] = nil
-		}
-
 		count++
-
 		if isSlice {
 			v.Set(reflect.Append(v, elem))
-		} else if isMapOfSlices {
-			s := v.MapIndex(keyElem)
-			if !s.IsValid() {
-				s = reflect.Zero(v.Type().Elem())
-			}
-			v.SetMapIndex(keyElem, reflect.Append(s, elem))
-		} else if isMap {
-			v.SetMapIndex(keyElem, elem)
 		} else {
 			break
 		}
 	}
-	return count, rows.Err()
-}
-
-func reflectAlloc(typ reflect.Type) reflect.Value {
-	if typ.Kind() == reflect.Ptr {
-		return reflect.New(typ.Elem())
-	}
-	return reflect.New(typ).Elem()
+	return count, nil
 }
 
 type dummyScanner struct{}
@@ -138,7 +60,92 @@ func (dummyScanner) Scan(interface{}) error {
 	return nil
 }
 
+type keyValueMap map[string]interface{}
+
+type kvScanner struct {
+	column string
+	m      keyValueMap
+}
+
+func (kv *kvScanner) Scan(v interface{}) error {
+	if b, ok := v.([]byte); ok {
+		tmp := make([]byte, len(b))
+		copy(tmp, b)
+		kv.m[kv.column] = tmp
+	} else {
+		// int64, float64, bool, string, time.Time, nil
+		kv.m[kv.column] = v
+	}
+	return nil
+}
+
+type pointersExtractor func(columns []string, value reflect.Value) []interface{}
+
 var (
-	dummyDest   sql.Scanner = dummyScanner{}
-	typeScanner             = reflect.TypeOf((*sql.Scanner)(nil)).Elem()
+	dummyDest       sql.Scanner = dummyScanner{}
+	typeScanner                 = reflect.TypeOf((*sql.Scanner)(nil)).Elem()
+	typeKeyValueMap             = reflect.TypeOf(keyValueMap(nil))
 )
+
+func getStructFieldsExtractor(t reflect.Type) pointersExtractor {
+	mapping := structMap(t)
+	return func(columns []string, value reflect.Value) []interface{} {
+		var ptr []interface{}
+		for _, key := range columns {
+			if index, ok := mapping[key]; ok {
+				ptr = append(ptr, value.FieldByIndex(index).Addr().Interface())
+			} else {
+				ptr = append(ptr, dummyDest)
+			}
+		}
+		return ptr
+	}
+}
+
+func getIndirectExtractor(extractor pointersExtractor) pointersExtractor {
+	return func(columns []string, value reflect.Value) []interface{} {
+		if value.IsNil() {
+			value.Set(reflect.New(value.Type().Elem()))
+		}
+		return extractor(columns, value.Elem())
+	}
+}
+
+func mapExtractor(columns []string, value reflect.Value) []interface{} {
+	if value.IsNil() {
+		value.Set(reflect.MakeMap(value.Type()))
+	}
+	m := value.Convert(typeKeyValueMap).Interface().(keyValueMap)
+	var ptr = make([]interface{}, 0, len(columns))
+	for _, c := range columns {
+		ptr = append(ptr, &kvScanner{column: c, m: m})
+	}
+	return ptr
+}
+
+func dummyExtractor(columns []string, value reflect.Value) []interface{} {
+	return []interface{}{value.Addr().Interface()}
+}
+
+func findExtractor(t reflect.Type) (pointersExtractor, error) {
+	if reflect.PtrTo(t).Implements(typeScanner) {
+		return dummyExtractor, nil
+	}
+
+	switch t.Kind() {
+	case reflect.Map:
+		if !t.ConvertibleTo(typeKeyValueMap) {
+			return nil, fmt.Errorf("expected %v, got %v", typeKeyValueMap, t)
+		}
+		return mapExtractor, nil
+	case reflect.Ptr:
+		inner, err := findExtractor(t.Elem())
+		if err != nil {
+			return nil, err
+		}
+		return getIndirectExtractor(inner), nil
+	case reflect.Struct:
+		return getStructFieldsExtractor(t), nil
+	}
+	return dummyExtractor, nil
+}

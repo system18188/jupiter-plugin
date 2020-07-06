@@ -1,68 +1,48 @@
 package dbr
 
 import (
+	"bytes"
 	"database/sql/driver"
 	"reflect"
-	"strings"
+	"unicode"
 )
 
-var NameMapping = camelCaseToSnakeCase
-
-func isUpper(b byte) bool {
-	return 'A' <= b && b <= 'Z'
-}
-
-func isLower(b byte) bool {
-	return 'a' <= b && b <= 'z'
-}
-
-func isDigit(b byte) bool {
-	return '0' <= b && b <= '9'
-}
-
-func toLower(b byte) byte {
-	if isUpper(b) {
-		return b - 'A' + 'a'
-	}
-	return b
-}
-
 func camelCaseToSnakeCase(name string) string {
-	var buf strings.Builder
-	buf.Grow(len(name) * 2)
+	buf := new(bytes.Buffer)
 
-	for i := 0; i < len(name); i++ {
-		buf.WriteByte(toLower(name[i]))
-		if i != len(name)-1 && isUpper(name[i+1]) &&
-			(isLower(name[i]) || isDigit(name[i]) ||
-				(i != len(name)-2 && isLower(name[i+2]))) {
-			buf.WriteByte('_')
+	runes := []rune(name)
+
+	for i := 0; i < len(runes); i++ {
+		buf.WriteRune(unicode.ToLower(runes[i]))
+		if i != len(runes)-1 && unicode.IsUpper(runes[i+1]) &&
+			(unicode.IsLower(runes[i]) || unicode.IsDigit(runes[i]) ||
+				(i != len(runes)-2 && unicode.IsLower(runes[i+2]))) {
+			buf.WriteRune('_')
 		}
 	}
 
 	return buf.String()
 }
 
+// structMap builds index to fast lookup fields in struct
+func structMap(t reflect.Type) map[string][]int {
+	m := make(map[string][]int)
+	structTraverse(m, t, nil)
+	return m
+}
+
 var (
 	typeValuer = reflect.TypeOf((*driver.Valuer)(nil)).Elem()
 )
 
-type tagStore struct {
-	m map[reflect.Type][]string
-}
-
-func newTagStore() *tagStore {
-	return &tagStore{
-		m: make(map[reflect.Type][]string),
+func structTraverse(m map[string][]int, t reflect.Type, head []int) {
+	if t.Implements(typeValuer) {
+		return
 	}
-}
-
-func (s *tagStore) get(t reflect.Type) []string {
-	if t.Kind() != reflect.Struct {
-		return nil
-	}
-	if _, ok := s.m[t]; !ok {
-		l := make([]string, t.NumField())
+	switch t.Kind() {
+	case reflect.Ptr:
+		structTraverse(m, t.Elem(), head)
+	case reflect.Struct:
 		for i := 0; i < t.NumField(); i++ {
 			field := t.Field(i)
 			if field.PkgPath != "" && !field.Anonymous {
@@ -76,66 +56,30 @@ func (s *tagStore) get(t reflect.Type) []string {
 			}
 			if tag == "" {
 				// no tag, but we can record the field name
-				tag = NameMapping(field.Name)
+				tag = camelCaseToSnakeCase(field.Name)
 			}
-			l[i] = tag
+			if _, ok := m[tag]; !ok {
+				m[tag] = append(head, i)
+			}
+			structTraverse(m, field.Type, append(head, i))
 		}
-		s.m[t] = l
 	}
-	return s.m[t]
 }
 
-func (s *tagStore) findPtr(value reflect.Value, name []string, ptr []interface{}) error {
-	if value.CanAddr() && value.Addr().Type().Implements(typeScanner) {
-		ptr[0] = value.Addr().Interface()
-		return nil
-	}
-	switch value.Kind() {
-	case reflect.Struct:
-		s.findValueByName(value, name, ptr, true)
-		return nil
+// extractOriginal removes all ptr and interface wrappers
+func extractOriginal(v reflect.Value) (reflect.Value, reflect.Kind) {
+	switch v.Kind() {
 	case reflect.Ptr:
-		if value.IsNil() {
-			value.Set(reflect.New(value.Type().Elem()))
+		if v.IsNil() {
+			return v, reflect.Ptr
 		}
-		return s.findPtr(value.Elem(), name, ptr)
+		return extractOriginal(v.Elem())
+	case reflect.Interface:
+		if v.IsNil() {
+			return v, reflect.Interface
+		}
+		return extractOriginal(v.Elem())
 	default:
-		ptr[0] = value.Addr().Interface()
-		return nil
-	}
-}
-
-func (s *tagStore) findValueByName(value reflect.Value, name []string, ret []interface{}, retPtr bool) {
-	if value.Type().Implements(typeValuer) {
-		return
-	}
-	switch value.Kind() {
-	case reflect.Ptr:
-		if value.IsNil() {
-			return
-		}
-		s.findValueByName(value.Elem(), name, ret, retPtr)
-	case reflect.Struct:
-		l := s.get(value.Type())
-		for i := 0; i < value.NumField(); i++ {
-			tag := l[i]
-			if tag == "" {
-				continue
-			}
-			fieldValue := value.Field(i)
-			for i, want := range name {
-				if want != tag {
-					continue
-				}
-				if ret[i] == nil {
-					if retPtr {
-						ret[i] = fieldValue.Addr().Interface()
-					} else {
-						ret[i] = fieldValue
-					}
-				}
-			}
-			s.findValueByName(fieldValue, name, ret, retPtr)
-		}
+		return v, v.Kind()
 	}
 }

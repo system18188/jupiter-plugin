@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSnakeCase(t *testing.T) {
@@ -46,47 +46,38 @@ func TestSnakeCase(t *testing.T) {
 			want: "xml_name",
 		},
 	} {
-		require.Equal(t, test.want, camelCaseToSnakeCase(test.in))
+		assert.Equal(t, test.want, camelCaseToSnakeCase(test.in))
 	}
 }
 
-func BenchmarkCamelCaseToSnakeCase(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		camelCaseToSnakeCase("getHTTPResponseCode")
-	}
-}
-
-func TestFindValueByName(t *testing.T) {
+func TestStructMap(t *testing.T) {
 	for _, test := range []struct {
-		in   interface{}
-		name []string
-		want []string
+		in       interface{}
+		expected map[string][]int
 	}{
 		{
 			in: struct {
 				CreatedAt time.Time
 			}{},
-			name: []string{"created_at"},
-			want: []string{"created_at"},
+			expected: map[string][]int{"created_at": {0}},
 		},
 		{
 			in: struct {
 				intVal int
 			}{},
-			name: []string{"int_val"},
+			expected: map[string][]int{},
 		},
 		{
 			in: struct {
 				IntVal int `db:"test"`
 			}{},
-			name: []string{"test"},
-			want: []string{"test"},
+			expected: map[string][]int{"test": {0}},
 		},
 		{
 			in: struct {
 				IntVal int `db:"-"`
 			}{},
-			name: []string{"int_val"},
+			expected: map[string][]int{},
 		},
 		{
 			in: struct {
@@ -94,21 +85,10 @@ func TestFindValueByName(t *testing.T) {
 					Test2 int
 				}
 			}{},
-			name: []string{"test2"},
-			want: []string{"test2"},
+			expected: map[string][]int{"test1": {0}, "test2": {0, 0}},
 		},
 	} {
-		found := make([]interface{}, len(test.name))
-		s := newTagStore()
-		s.findValueByName(reflect.ValueOf(test.in), test.name, found, false)
-
-		var got []string
-		for i, v := range found {
-			if v != nil {
-				got = append(got, test.name[i])
-			}
-		}
-
-		require.Equal(t, test.want, got)
+		m := structMap(reflect.ValueOf(test.in).Type())
+		assert.Equal(t, test.expected, m)
 	}
 }

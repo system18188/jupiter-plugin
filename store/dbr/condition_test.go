@@ -1,10 +1,10 @@
 package dbr
 
 import (
+	"github.com/system18188/jupiter-plugin/store/dbr/dialect"
 	"testing"
 
-	"github.com/system18188/jupiter-plugin/store/dbr/dialect"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCondition(t *testing.T) {
@@ -29,6 +29,21 @@ func TestCondition(t *testing.T) {
 			value: nil,
 		},
 		{
+			cond:  Eq("col", map[int]int{}),
+			query: "0",
+			value: nil,
+		},
+		{
+			cond:  Eq("col", []int{1}),
+			query: "`col` IN ?",
+			value: []interface{}{[]int{1}},
+		},
+		{
+			cond:  Eq("col", map[int]int{1: 2}),
+			query: "`col` IN ?",
+			value: []interface{}{map[int]int{1: 2}},
+		},
+		{
 			cond:  Neq("col", 1),
 			query: "`col` != ?",
 			value: []interface{}{1},
@@ -37,6 +52,21 @@ func TestCondition(t *testing.T) {
 			cond:  Neq("col", nil),
 			query: "`col` IS NOT NULL",
 			value: nil,
+		},
+		{
+			cond:  Neq("col", []int{}),
+			query: "1",
+			value: nil,
+		},
+		{
+			cond:  Neq("col", []int{1}),
+			query: "`col` NOT IN ?",
+			value: []interface{}{[]int{1}},
+		},
+		{
+			cond:  Neq("col", map[int]int{1: 2}),
+			query: "`col` NOT IN ?",
+			value: []interface{}{map[int]int{1: 2}},
 		},
 		{
 			cond:  Gt("col", 1),
@@ -63,41 +93,11 @@ func TestCondition(t *testing.T) {
 			query: "(`a` < ?) AND ((`b` > ?) OR (`c` != ?))",
 			value: []interface{}{1, 2, 3},
 		},
-		{
-			cond:  Like("a", "%BLAH%", "#"),
-			query: "`a` LIKE '%BLAH%' ESCAPE '#'",
-			value: nil,
-		},
-		{
-			cond:  Like("a", "%50#%%", "#"),
-			query: "`a` LIKE '%50#%%' ESCAPE '#'",
-			value: nil,
-		},
-		{
-			cond:  NotLike("a", "%BLAH%", "#"),
-			query: "`a` NOT LIKE '%BLAH%' ESCAPE '#'",
-			value: nil,
-		},
-		{
-			cond:  NotLike("a", "%50#%%", "#"),
-			query: "`a` NOT LIKE '%50#%%' ESCAPE '#'",
-			value: nil,
-		},
-		{
-			cond:  Like("a", "_x_"),
-			query: "`a` LIKE '_x_'",
-			value: nil,
-		},
-		{
-			cond:  NotLike("a", "_x_"),
-			query: "`a` NOT LIKE '_x_'",
-			value: nil,
-		},
 	} {
 		buf := NewBuffer()
 		err := test.cond.Build(dialect.MySQL, buf)
-		require.NoError(t, err)
-		require.Equal(t, test.query, buf.String())
-		require.Equal(t, test.value, buf.Value())
+		assert.NoError(t, err)
+		assert.Equal(t, test.query, buf.String())
+		assert.Equal(t, test.value, buf.Value())
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/system18188/jupiter-plugin/store/dbr/dialect"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 type insertTest struct {
@@ -14,32 +14,35 @@ type insertTest struct {
 
 func TestInsertStmt(t *testing.T) {
 	buf := NewBuffer()
-	builder := InsertInto("table").Ignore().Columns("a", "b").Values(1, "one").Record(&insertTest{
+	builder := InsertInto("table").Columns("a", "b").Values(1, "one").Record(&insertTest{
 		A: 2,
 		C: "two",
-	}).Comment("INSERT TEST")
+	})
 	err := builder.Build(dialect.MySQL, buf)
-	require.NoError(t, err)
-	require.Equal(t, "/* INSERT TEST */\nINSERT IGNORE INTO `table` (`a`,`b`) VALUES (?,?), (?,?)", buf.String())
-	require.Equal(t, []interface{}{1, "one", 2, "two"}, buf.Value())
+	assert.NoError(t, err)
+	assert.Equal(t, "INSERT INTO `table` (`a`,`b`) VALUES (?,?), (?,?)", buf.String())
+	assert.Equal(t, []interface{}{1, "one", 2, "two"}, buf.Value())
 }
 
-func TestPostgresReturning(t *testing.T) {
-	sess := postgresSession
-	reset(t, sess)
+func TestInsertOnConflictStmt(t *testing.T) {
+	buf := NewBuffer()
+	exp := Expr("a + ?", 1)
+	builder := InsertInto("table").Columns("a", "b").Values(1, "one")
+	builder.OnConflict("").Action("a", exp).Action("b", "one")
+	err := builder.Build(dialect.MySQL, buf)
+	assert.NoError(t, err)
+	assert.Equal(t, "INSERT INTO `table` (`a`,`b`) VALUES (?,?) ON DUPLICATE KEY UPDATE `a`=?,`b`=?", buf.String())
+	assert.Equal(t, []interface{}{1, "one", exp, "one"}, buf.Value())
+}
 
-	var person dbrPerson
-	err := sess.InsertInto("dbr_people").Columns("name").Record(&person).
-		Returning("id").Load(&person.Id)
-	require.NoError(t, err)
-	require.True(t, person.Id > 0)
-	require.Len(t, sess.EventReceiver.(*testTraceReceiver).started, 1)
-	require.Contains(t, sess.EventReceiver.(*testTraceReceiver).started[0].eventName, "dbr.select")
-	require.Contains(t, sess.EventReceiver.(*testTraceReceiver).started[0].query, "INSERT")
-	require.Contains(t, sess.EventReceiver.(*testTraceReceiver).started[0].query, "dbr_people")
-	require.Contains(t, sess.EventReceiver.(*testTraceReceiver).started[0].query, "name")
-	require.Equal(t, 1, sess.EventReceiver.(*testTraceReceiver).finished)
-	require.Equal(t, 0, sess.EventReceiver.(*testTraceReceiver).errored)
+func TestInsertOnConflictMapStmt(t *testing.T) {
+	buf := NewBuffer()
+	exp := Expr("a + ?", 1)
+	builder := InsertInto("table").Columns("a", "b").Values(1, "one")
+	err := builder.OnConflictMap("", map[string]interface{}{"a": exp, "b": "one"}).Build(dialect.MySQL, buf)
+	assert.NoError(t, err)
+	assert.Equal(t, "INSERT INTO `table` (`a`,`b`) VALUES (?,?) ON DUPLICATE KEY UPDATE `a`=?,`b`=?", buf.String())
+	assert.Equal(t, []interface{}{1, "one", exp, "one"}, buf.Value())
 }
 
 func BenchmarkInsertValuesSQL(b *testing.B) {

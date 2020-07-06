@@ -38,3 +38,22 @@ func (d sqlite3) EncodeBytes(b []byte) string {
 func (d sqlite3) Placeholder(_ int) string {
 	return "?"
 }
+
+func (d sqlite3) OnConflict(_ string) string {
+	return ""
+}
+
+func (d sqlite3) Proposed(_ string) string {
+	return ""
+}
+
+func (d sqlite3) Limit(offset, limit int64) string {
+	if offset < 0 {
+		return fmt.Sprintf("LIMIT %d", limit)
+	}
+	return fmt.Sprintf("LIMIT %d OFFSET %d", limit, offset)
+}
+
+func (d sqlite3) Prewhere() string {
+	return ""
+}
