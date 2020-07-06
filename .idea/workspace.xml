@@ -2,51 +2,27 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="897e8b09-7e32-42a3-8aee-e762d7331d6c" name="默认更改列表" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/LICENSE" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/README.md.tpl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/buffer.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/buffer.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/builder.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/builder.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/comments.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/comments_test.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/condition.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/condition.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/condition_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/condition_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/dbr.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/dbr.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/dbr_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/dbr_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/delete.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/delete.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/delete_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/delete_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/dialect.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/dialect.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/dialect/dialect.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/dialect/dialect.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/dialect/dialect_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/dialect/dialect_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/dialect/mysql.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/dialect/mysql.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/dialect/postgresql.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/dialect/postgresql.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/dialect/sqlite3.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/dialect/sqlite3.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/errors.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/errors.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/event.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/event.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/event_test.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/example_test.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/expr.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/expr.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/ident.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/ident.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/insert.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/insert.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/interpolate.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/interpolate.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/join.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/join.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/load.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/load.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/load_benchmark_test.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/now.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/now.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/opentracing/event_receiver.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/postgres_bytea_benchmark_test.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/select.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/select.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/select_return.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/select_return.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/sqlmock_test.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/transaction.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/transaction.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/types.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/types.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/union.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/union.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/.travis.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/CHANGELOG.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/buffer_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/condition_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/dbr_go18_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/dbr_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/delete_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/dialect/dialect_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/insert_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/interpolate_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/load_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/select_builder_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/select_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/transaction_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/types_test.go" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/store/dbr/update.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/update.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/update_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/update_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/util.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/util.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/store/dbr/util_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/dbr/util_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/update_test.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/dbr/util_test.go" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -57,82 +33,103 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/store/dbr/transaction_test.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="63">
-              <caret line="3" column="61" selection-start-line="3" selection-start-column="61" selection-end-line="3" selection-end-column="61" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/store/dbr/types_test.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="147">
-              <caret line="7" column="61" selection-start-line="7" selection-start-column="61" selection-end-line="7" selection-end-column="61" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/store/dbr/update_builder.go">
+        <entry file="file://$PROJECT_DIR$/store/dbr/ident.go">
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/store/dbr/join.go">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/store/dbr/load_test.go">
+        <entry file="file://$PROJECT_DIR$/store/dbr/insert.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="399">
-              <caret line="19" column="28" lean-forward="true" selection-start-line="19" selection-start-column="28" selection-end-line="19" selection-end-column="28" />
+            <state relative-caret-position="882">
+              <caret line="42" selection-start-line="42" selection-end-line="42" />
               <folding>
-                <element signature="e#13#174#0" expanded="true" />
+                <element signature="e#13#50#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/store/dbr/condition/condition.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="210">
+              <caret line="10" column="15" selection-start-line="10" selection-start-column="15" selection-end-line="10" selection-end-column="15" />
+              <folding>
+                <element signature="e#12#73#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/store/dbr/dialect/clickhouse.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="42">
+              <caret line="2" column="7" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
+              <folding>
+                <element signature="e#17#51#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/store/dbr/dialect/dialect.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="5" column="11" selection-start-line="5" selection-start-column="11" selection-end-line="5" selection-end-column="11" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/store/dbr/dialect/postgresql.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="42">
+              <caret line="2" column="7" lean-forward="true" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
+              <folding>
+                <element signature="e#17#53#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/store/dbr/dialect/sqlite3.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="42">
+              <caret line="2" column="7" lean-forward="true" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
+              <folding>
+                <element signature="e#17#53#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/store/dbr/update_test.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="5" column="61" selection-start-line="5" selection-start-column="61" selection-end-line="5" selection-end-column="61" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/store/dbr/select_builder.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-412" />
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/store/dbr/select_return.go">
+        <entry file="file://$PROJECT_DIR$/store/dbr/condition.go">
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/store/dbr/select_test.go">
+        <entry file="file://$PROJECT_DIR$/store/dbr/delete_builder.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="5" column="61" selection-start-line="5" selection-start-column="61" selection-end-line="5" selection-end-column="61" />
+            <state relative-caret-position="210">
+              <caret line="10" column="17" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
+              <folding>
+                <element signature="e#13#46#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/store/dbr/select_builder_test.go">
+        <entry file="file://$PROJECT_DIR$/store/dbr/dialect/mysql.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="15" column="24" lean-forward="true" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
+            <state relative-caret-position="42">
+              <caret line="2" column="7" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
               <folding>
-                <element signature="e#13#92#0" expanded="true" />
+                <element signature="e#17#51#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -163,7 +160,6 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/store/dbr/select.go" />
-        <option value="$PROJECT_DIR$/store/dbr/insert.go" />
         <option value="$PROJECT_DIR$/store/dbr/dialect.go" />
         <option value="$PROJECT_DIR$/store/dbr/config.go" />
         <option value="$PROJECT_DIR$/store/dbr/event_jupiter.go" />
@@ -195,17 +191,18 @@
         <option value="$PROJECT_DIR$/pkg/filters/pad_test.go" />
         <option value="$PROJECT_DIR$/pkg/filters/remove.go" />
         <option value="$PROJECT_DIR$/pkg/filters/ustring.go" />
-        <option value="$PROJECT_DIR$/store/dbr/condition/condition.go" />
         <option value="$PROJECT_DIR$/store/dbr/comments_test.go" />
-        <option value="$PROJECT_DIR$/store/dbr/delete_test.go" />
         <option value="$PROJECT_DIR$/store/dbr/sqlmock_test.go" />
         <option value="$PROJECT_DIR$/server/xrestful/config.go" />
-        <option value="$PROJECT_DIR$/store/dbr/dbr.go" />
         <option value="$PROJECT_DIR$/store/dbr/update.go" />
         <option value="$PROJECT_DIR$/store/dbr/.gitignore" />
+        <option value="$PROJECT_DIR$/store/dbr/insert.go" />
+        <option value="$PROJECT_DIR$/store/dbr/dbr.go" />
         <option value="$PROJECT_DIR$/store/dbr/condition_test.go" />
+        <option value="$PROJECT_DIR$/store/dbr/condition/condition.go" />
         <option value="$PROJECT_DIR$/store/dbr/dbr_go18_test.go" />
         <option value="$PROJECT_DIR$/store/dbr/dbr_test.go" />
+        <option value="$PROJECT_DIR$/store/dbr/delete_test.go" />
         <option value="$PROJECT_DIR$/store/dbr/insert_test.go" />
         <option value="$PROJECT_DIR$/store/dbr/interpolate_test.go" />
         <option value="$PROJECT_DIR$/store/dbr/load_test.go" />
@@ -289,6 +286,13 @@
             </path>
             <path>
               <item name="jupiter-plugin" type="b2602c69:ProjectViewProjectNode" />
+              <item name="jupiter-plugin" type="462c0819:PsiDirectoryNode" />
+              <item name="store" type="462c0819:PsiDirectoryNode" />
+              <item name="dbr" type="462c0819:PsiDirectoryNode" />
+              <item name="dialect" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="jupiter-plugin" type="b2602c69:ProjectViewProjectNode" />
               <item name="外部库" type="cb654da1:ExternalLibrariesNode" />
             </path>
           </expand>
@@ -336,14 +340,13 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1920" y="-44" width="1080" height="1920" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27842003" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.07837838" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.07837838" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -352,7 +355,7 @@
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="9" />
       <window_info anchor="bottom" id="Database Changes" order="10" />
-      <window_info anchor="bottom" id="Terminal" order="11" weight="0.14594595" />
+      <window_info anchor="bottom" id="Terminal" order="11" visible="true" weight="0.14594595" />
       <window_info anchor="bottom" id="Event Log" order="12" side_tool="true" />
       <window_info anchor="bottom" id="调试" order="13" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -367,81 +370,6 @@
     <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/store/dbr/ident.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/util.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1484" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr1/util.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr1/config.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/event_jupiter.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="903">
-          <caret line="45" selection-start-line="45" selection-end-line="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/config.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1078">
-          <caret line="60" column="32" selection-start-line="60" selection-start-column="22" selection-end-line="60" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/insert.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1036">
-          <caret line="167" column="9" lean-forward="true" selection-start-line="167" selection-start-column="9" selection-end-line="167" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr1/now.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/types.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr1/event_test.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr1/example_test.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr1/expr.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr1/ident.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr1/insert_test.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr1/interpolate.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr1/builder.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr1/condition/condition.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/condition/condition.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr1/opentracing/event_receiver.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="36" lean-forward="true" selection-start-line="36" selection-end-line="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/store/dbr1/dbr.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1988">
@@ -493,69 +421,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/.gitignore">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/buffer.go">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/.travis.yml">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/buffer_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="21">
-          <caret line="1" selection-start-line="1" selection-end-line="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/condition_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="336">
-          <caret line="16" column="19" selection-start-line="16" selection-start-column="19" selection-end-line="16" selection-end-column="19" />
-          <folding>
-            <element signature="e#13#106#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/dbr_go18.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="22" column="14" selection-start-line="22" selection-start-column="14" selection-end-line="22" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/dbr_go18_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="17" column="20" selection-start-line="17" selection-start-column="20" selection-end-line="17" selection-end-column="20" />
-          <folding>
-            <element signature="e#30#150#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/dbr_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="25" column="1" selection-start-line="25" selection-start-column="1" selection-end-line="25" selection-end-column="1" />
-          <folding>
-            <element signature="e#13#258#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/delete_builder.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="10" column="17" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
-          <folding>
-            <element signature="e#13#46#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/store/dbr/insert_builder.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="42">
@@ -566,35 +431,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/insert_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="5" column="61" selection-start-line="5" selection-start-column="61" selection-end-line="5" selection-end-column="61" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/interpolate_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="651">
-          <caret line="31" column="8" lean-forward="true" selection-start-line="31" selection-start-column="8" selection-end-line="31" selection-end-column="8" />
-          <folding>
-            <element signature="e#13#125#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/store/dbr/join.go">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/load_test.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="399">
-          <caret line="19" column="28" lean-forward="true" selection-start-line="19" selection-start-column="28" selection-end-line="19" selection-end-column="28" />
-          <folding>
-            <element signature="e#13#174#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/store/dbr/select_builder_test.go">
       <provider selected="true" editor-type-id="text-editor">
@@ -614,36 +452,255 @@
     <entry file="file://$PROJECT_DIR$/store/dbr/select_return.go">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/update_builder.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/util.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/LICENSE">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/order.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="504">
+          <caret line="24" selection-start-line="24" selection-end-line="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/dbr.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="441">
+          <caret line="22" column="17" lean-forward="true" selection-start-line="22" selection-start-column="17" selection-end-line="22" selection-end-column="17" />
+          <folding>
+            <element signature="e#13#103#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/config.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/condition_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="5" column="52" selection-start-line="5" selection-start-column="52" selection-end-line="5" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/.gitignore">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/buffer_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="21">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/buffer.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/dbr_go18.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="84">
+          <caret line="4" column="7" lean-forward="true" selection-start-line="4" selection-start-column="7" selection-end-line="4" selection-end-column="7" />
+          <folding>
+            <element signature="e#30#56#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/dbr_go18_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="25" column="1" lean-forward="true" selection-start-line="25" selection-start-column="1" selection-end-line="25" selection-end-column="1" />
+          <folding>
+            <element signature="e#30#154#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/dbr_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="588">
+          <caret line="28" column="21" lean-forward="true" selection-start-line="28" selection-start-column="21" selection-end-line="28" selection-end-column="21" />
+          <folding>
+            <element signature="e#13#262#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/delete.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/delete_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="5" column="52" selection-start-line="5" selection-start-column="52" selection-end-line="5" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/insert_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="5" column="52" selection-start-line="5" selection-start-column="52" selection-end-line="5" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/interpolate_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="147">
+          <caret line="7" column="52" selection-start-line="7" selection-start-column="52" selection-end-line="7" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/load_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="168">
+          <caret line="8" column="52" selection-start-line="8" selection-start-column="52" selection-end-line="8" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/store/dbr/select_test.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
-          <caret line="5" column="61" selection-start-line="5" selection-start-column="61" selection-end-line="5" selection-end-column="61" />
+          <caret line="5" column="52" selection-start-line="5" selection-start-column="52" selection-end-line="5" selection-end-column="52" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/store/dbr/transaction_test.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="63">
-          <caret line="3" column="61" selection-start-line="3" selection-start-column="61" selection-end-line="3" selection-end-column="61" />
+        <state relative-caret-position="525">
+          <caret line="25" column="9" selection-start-line="25" selection-start-column="9" selection-end-line="25" selection-end-column="9" />
+          <folding>
+            <element signature="e#13#111#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/store/dbr/types_test.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="147">
-          <caret line="7" column="61" selection-start-line="7" selection-start-column="61" selection-end-line="7" selection-end-column="61" />
+        <state relative-caret-position="546">
+          <caret line="26" column="9" selection-start-line="26" selection-start-column="9" selection-end-line="26" selection-end-column="9" />
+          <folding>
+            <element signature="e#13#135#0" expanded="true" />
+          </folding>
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/store/dbr/update_builder.go">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/store/dbr/update_test.go">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
-          <caret line="5" column="61" selection-start-line="5" selection-start-column="61" selection-end-line="5" selection-end-column="61" />
+          <caret line="5" column="52" selection-start-line="5" selection-start-column="52" selection-end-line="5" selection-end-column="52" />
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/util_test.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1092">
+          <caret line="52" column="33" selection-start-line="52" selection-start-column="33" selection-end-line="52" selection-end-column="33" />
+          <folding>
+            <element signature="e#13#92#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/ident.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="604">
+          <caret line="37" column="10" lean-forward="true" selection-start-line="37" selection-start-column="10" selection-end-line="37" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/.travis.yml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/insert.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="882">
+          <caret line="42" selection-start-line="42" selection-end-line="42" />
+          <folding>
+            <element signature="e#13#50#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/condition/condition.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="10" column="15" selection-start-line="10" selection-start-column="15" selection-end-line="10" selection-end-column="15" />
+          <folding>
+            <element signature="e#12#73#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/dialect/clickhouse.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="42">
+          <caret line="2" column="7" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
+          <folding>
+            <element signature="e#17#51#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/dialect/mysql.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="42">
+          <caret line="2" column="7" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
+          <folding>
+            <element signature="e#17#51#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/dialect/dialect_test.go">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/dialect/dialect.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="5" column="11" selection-start-line="5" selection-start-column="11" selection-end-line="5" selection-end-column="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/dialect/postgresql.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="42">
+          <caret line="2" column="7" lean-forward="true" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
+          <folding>
+            <element signature="e#17#53#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/dialect/sqlite3.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="42">
+          <caret line="2" column="7" lean-forward="true" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
+          <folding>
+            <element signature="e#17#53#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/delete_builder.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="10" column="17" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
+          <folding>
+            <element signature="e#13#46#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/store/dbr/condition.go">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
   </component>
   <component name="masterDetails">
