@@ -14,6 +14,7 @@ type UpdateBuilder interface {
 	Where(query interface{}, value ...interface{}) UpdateBuilder
 	Set(column string, value interface{}) UpdateBuilder
 	SetMap(m map[string]interface{}) UpdateBuilder
+	Scan(formStruct interface{}, columns ...string) UpdateBuilder
 	Limit(n uint64) UpdateBuilder
 }
 
@@ -84,6 +85,11 @@ func (b *updateBuilder) Set(column string, value interface{}) UpdateBuilder {
 // SetMap adds "SET column=value" for each key value pair in m
 func (b *updateBuilder) SetMap(m map[string]interface{}) UpdateBuilder {
 	b.updateStmt.SetMap(m)
+	return b
+}
+
+func (b *updateBuilder) Scan(formStruct interface{}, columns ...string) UpdateBuilder {
+	b.updateStmt.Scan(formStruct,columns...)
 	return b
 }
 
