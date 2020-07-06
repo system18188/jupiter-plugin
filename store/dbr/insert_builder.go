@@ -23,6 +23,7 @@ type InsertBuilder interface {
 type insertBuilder struct {
 	EventReceiver
 	runner
+	loader
 
 	Dialect    Dialect
 	RecordID   reflect.Value
@@ -103,7 +104,7 @@ func (b *insertBuilder) Exec() (sql.Result, error) {
 	return result, nil
 }
 
-func (b *insertBuilder) Load(value interface{}) error {
+func (b *insertBuilder) LoadStruct(value interface{}) error {
 	_, err := query(b.runner, b.EventReceiver, b, b.Dialect, value)
 	return err
 }
