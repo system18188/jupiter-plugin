@@ -60,7 +60,7 @@ func (f File) SaveUploadedFile(dst string) (file string, err error) {
 	}
 	// 生成文件路径
 	t := time.Now()
-	file = fmt.Sprint(t.Year(), "/", t.YearDay(), t.Hour(), t.Minute(), t.Second(), random.Intn(5), hType)
+	file = fmt.Sprint(t.Year(), "/", t.YearDay(), t.Hour(), t.Minute(), t.Second(), random.IntN(5), hType)
 	localFile := dst + file
 	// 建立所有文件夹
 	if err := os.MkdirAll(path.Dir(localFile), 0700); err != nil {
