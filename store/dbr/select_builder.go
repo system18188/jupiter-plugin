@@ -17,7 +17,7 @@ type SelectBuilder interface {
 	Prewhere(query interface{}, value ...interface{}) SelectBuilder
 	Where(query interface{}, value ...interface{}) SelectBuilder
 	Having(query interface{}, value ...interface{}) SelectBuilder
-	GroupBy(col ...string) SelectBuilder
+	GroupBy(query interface{}) SelectBuilder
 	OrderAsc(col string) SelectStmt
 	OrderDesc(col string) SelectStmt
 	Limit(n uint64) SelectBuilder
@@ -213,8 +213,8 @@ func (b *selectBuilder) From(table interface{}) SelectBuilder {
 }
 
 // GroupBy specifies columns for grouping
-func (b *selectBuilder) GroupBy(col ...string) SelectBuilder {
-	b.selectStmt.GroupBy(col...)
+func (b *selectBuilder) GroupBy(query interface{}) SelectBuilder {
+	b.selectStmt.GroupBy(query)
 	return b
 }
 

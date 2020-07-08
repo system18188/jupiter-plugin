@@ -9,7 +9,7 @@ type SelectStmt interface {
 	Prewhere(query interface{}, value ...interface{}) SelectStmt
 	Where(query interface{}, value ...interface{}) SelectStmt
 	Having(query interface{}, value ...interface{}) SelectStmt
-	GroupBy(col ...string) SelectStmt
+	GroupBy(query interface{}) SelectStmt
 	OrderAsc(col string) SelectStmt
 	OrderDesc(col string) SelectStmt
 	Limit(n uint64) SelectStmt
@@ -235,9 +235,12 @@ func (b *selectStmt) Having(query interface{}, value ...interface{}) SelectStmt 
 }
 
 // GroupBy specifies columns for grouping
-func (b *selectStmt) GroupBy(col ...string) SelectStmt {
-	for _, group := range col {
-		b.Group = append(b.Group, Expr(group))
+func (b *selectStmt) GroupBy(query interface{}) SelectStmt {
+	switch query := query.(type) {
+	case string:
+		b.Group = append(b.Group, Expr(query))
+	case Builder:
+		b.Group = append(b.Group, query)
 	}
 	return b
 }
