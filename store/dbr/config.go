@@ -3,9 +3,9 @@ package dbr
 import (
 	"fmt"
 	"github.com/douyu/jupiter/pkg/conf"
-	"github.com/douyu/jupiter/pkg/ecode"
 	"github.com/douyu/jupiter/pkg/util/xtime"
 	"github.com/douyu/jupiter/pkg/xlog"
+	_ "github.com/lib/pq"
 	"time"
 )
 
@@ -67,7 +67,7 @@ func (config *Config) WithLogger(log *xlog.Logger) *Config {
 func (config *Config) Build() *Connection {
 	conn, err := Open(config.Drive, config.DSN, JupiterReceiver)
 	if err != nil {
-		config.logger.Panic(fmt.Sprintf("open ",config.Drive), xlog.FieldMod("dbr"), xlog.FieldErrKind(ecode.ErrKindRequestErr), xlog.FieldErr(err), xlog.FieldValueAny(config))
+		config.logger.Panic(fmt.Sprint("open ",config.Drive), xlog.FieldMod("dbr"), xlog.FieldErr(err), xlog.FieldValueAny(config))
 	}
 	conn.SetMaxIdleConns(config.MaxIdleConns)
 	conn.SetMaxOpenConns(config.MaxOpenConns)
