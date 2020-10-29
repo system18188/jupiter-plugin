@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
+	"strings"
 )
 
 // ConflictStmt is ` ON CONFLICT ...` part of InsertStmt
@@ -27,6 +28,7 @@ type InsertStmt interface {
 	Builder
 	Columns(column ...string) InsertStmt
 	Values(value ...interface{}) InsertStmt
+	StructValues(value interface{}) InsertStmt
 	Record(structValue interface{}) InsertStmt
 	OnConflictMap(constraint string, actions map[string]interface{}) InsertStmt
 	OnConflict(constraint string) ConflictStmt
@@ -162,6 +164,34 @@ func (b *insertStmt) Columns(column ...string) InsertStmt {
 func (b *insertStmt) Values(value ...interface{}) InsertStmt {
 	b.Value = append(b.Value, value)
 	return b
+}
+
+// StructValues  Struct里tag的db不等于空的写入values
+func (b *insertStmt) StructValues(value interface{}) InsertStmt {
+	vType := reflect.TypeOf(value)
+	vValue := reflect.ValueOf(value)
+	if vType.Kind() == reflect.Ptr {
+		vType = vType.Elem()
+		vValue = vValue.Elem()
+	}
+	if vType.Kind() != reflect.Struct {
+		return b
+	}
+	columns := make([]string, 0)
+	values := make([]interface{}, 0)
+	for index := 0; index < vType.NumField(); index++ {
+		typeField := vType.Field(index)
+		valueField := vValue.Field(index)
+		column := typeField.Tag.Get("db")
+		columnSlice := strings.SplitN(column, ",", 2)
+		column = columnSlice[0]
+		if column == "" || column == "id" || column == "-" {
+			continue
+		}
+		columns = append(columns, column)
+		values = append(values, valueField.Interface())
+	}
+	return b.Columns(columns...).Values(values...)
 }
 
 // Record adds a tuple for columns from a struct

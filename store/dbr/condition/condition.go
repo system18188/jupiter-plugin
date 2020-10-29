@@ -9,9 +9,6 @@ var (
 	Where   = reflect.TypeOf(WhereFunc(func() (dbr.Builder, bool) { return nil, false }))
 	GroupBy = reflect.TypeOf(GroupFunc(func() (dbr.Builder, bool) { return nil, false }))
 	Having  = reflect.TypeOf(HavingFunc(func() (dbr.Builder, bool) { return nil, false }))
-	Order   = reflect.TypeOf(OrderFunc(func() (dbr.Builder, bool) { return nil, false }))
-	Limit   = reflect.TypeOf(LimitFunc(func() (dbr.Builder, bool) { return nil, false }))
-	Offset  = reflect.TypeOf(OffsetFunc(func() (dbr.Builder, bool) { return nil, false }))
 )
 
 func NewBuilders() *Builders {
@@ -31,9 +28,6 @@ type (
 	WhereFunc func() (dbr.Builder, bool)
 	GroupFunc func() (dbr.Builder, bool)
 	HavingFunc func() (dbr.Builder, bool)
-	OrderFunc func() (dbr.Builder, bool)
-	LimitFunc func() (dbr.Builder, bool)
-	OffsetFunc func() (dbr.Builder, bool)
 )
 
 // ScanSelectBuilder 扫描Builder写入查询SQL语句
@@ -73,18 +67,6 @@ func (b GroupFunc) Build() (dbr.Builder, bool) {
 }
 
 func (b HavingFunc) Build() (dbr.Builder, bool) {
-	return b()
-}
-
-func (b OrderFunc) Build() (dbr.Builder, bool) {
-	return b()
-}
-
-func (b LimitFunc) Build() (dbr.Builder, bool) {
-	return b()
-}
-
-func (b OffsetFunc) Build() (dbr.Builder, bool) {
 	return b()
 }
 

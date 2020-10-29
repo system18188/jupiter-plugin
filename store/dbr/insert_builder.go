@@ -13,6 +13,7 @@ type InsertBuilder interface {
 	LoadStruct(value interface{}) error
 	Columns(column ...string) InsertBuilder
 	Values(value ...interface{}) InsertBuilder
+	StructValues(value interface{}) InsertBuilder
 	Record(structValue interface{}) InsertBuilder
 	OnConflictMap(constraint string, actions map[string]interface{}) InsertBuilder
 	OnConflict(constraint string) ConflictStmt
@@ -120,6 +121,13 @@ func (b *insertBuilder) Values(value ...interface{}) InsertBuilder {
 	b.insertStmt.Values(value...)
 	return b
 }
+
+// StructValues  Struct里tag的db不等于空的写入values
+func (b *insertBuilder) StructValues(value interface{}) InsertBuilder {
+	b.insertStmt.StructValues(value)
+	return b
+}
+
 // Returning specifies the returning columns for postgres.
 func (b *insertBuilder) Returning(column ...string) InsertBuilder {
 	b.insertStmt.Returning(column...)
