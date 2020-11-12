@@ -3,6 +3,7 @@ package dbr
 import (
 	"bytes"
 	"fmt"
+	"github.com/system18188/jupiter-plugin/pkg/check"
 	"reflect"
 	"strings"
 )
@@ -28,7 +29,7 @@ type InsertStmt interface {
 	Builder
 	Columns(column ...string) InsertStmt
 	Values(value ...interface{}) InsertStmt
-	StructValues(value interface{}) InsertStmt
+	ScanStruct(value interface{}, column ...string) InsertStmt
 	Record(structValue interface{}) InsertStmt
 	OnConflictMap(constraint string, actions map[string]interface{}) InsertStmt
 	OnConflict(constraint string) ConflictStmt
@@ -166,8 +167,8 @@ func (b *insertStmt) Values(value ...interface{}) InsertStmt {
 	return b
 }
 
-// StructValues  Struct里tag的db不等于空的写入values
-func (b *insertStmt) StructValues(value interface{}) InsertStmt {
+// StructValues  Struct里tag 的db不等于空的写入values
+func (b *insertStmt) ScanStruct(value interface{}, column ...string) InsertStmt {
 	vType := reflect.TypeOf(value)
 	vValue := reflect.ValueOf(value)
 	if vType.Kind() == reflect.Ptr {
@@ -179,16 +180,21 @@ func (b *insertStmt) StructValues(value interface{}) InsertStmt {
 	}
 	columns := make([]string, 0)
 	values := make([]interface{}, 0)
+	columnLen := len(column)
 	for index := 0; index < vType.NumField(); index++ {
 		typeField := vType.Field(index)
 		valueField := vValue.Field(index)
-		column := typeField.Tag.Get("db")
-		columnSlice := strings.SplitN(column, ",", 2)
-		column = columnSlice[0]
-		if column == "" || column == "id" || column == "-" {
+		columnName := typeField.Tag.Get("db")
+		columnSlice := strings.SplitN(columnName, ",", 2)
+		columnName = columnSlice[0]
+		if columnName == "" || columnName == "id" || columnName == "-" {
 			continue
 		}
-		columns = append(columns, column)
+		// 检查列是否存在
+		if columnLen > 0 && !check.IsSliceContainsString(columnName, column...) {
+			continue
+		}
+		columns = append(columns, columnName)
 		values = append(values, valueField.Interface())
 	}
 	return b.Columns(columns...).Values(values...)

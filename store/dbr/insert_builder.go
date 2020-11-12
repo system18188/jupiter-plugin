@@ -13,7 +13,7 @@ type InsertBuilder interface {
 	LoadStruct(value interface{}) error
 	Columns(column ...string) InsertBuilder
 	Values(value ...interface{}) InsertBuilder
-	StructValues(value interface{}) InsertBuilder
+	ScanStruct(value interface{}, column ...string) InsertBuilder
 	Record(structValue interface{}) InsertBuilder
 	OnConflictMap(constraint string, actions map[string]interface{}) InsertBuilder
 	OnConflict(constraint string) ConflictStmt
@@ -122,9 +122,9 @@ func (b *insertBuilder) Values(value ...interface{}) InsertBuilder {
 	return b
 }
 
-// StructValues  Struct里tag的db不等于空的写入values
-func (b *insertBuilder) StructValues(value interface{}) InsertBuilder {
-	b.insertStmt.StructValues(value)
+// ScanStruct  Struct里tag的db不等于空的写入values
+func (b *insertBuilder) ScanStruct(value interface{}, column ...string) InsertBuilder {
+	b.insertStmt.ScanStruct(value, column...)
 	return b
 }
 
