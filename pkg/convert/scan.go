@@ -112,7 +112,6 @@ func ByteScan(b []byte, v interface{}) error {
 	case encoding.BinaryUnmarshaler:
 		return v.UnmarshalBinary(b)
 	default:
-		return fmt.Errorf(
-			"scan: can't unmarshal %T (consider implementing BinaryUnmarshaler)", v)
+		return fmt.Errorf("scan: can't unmarshal %T (consider implementing BinaryUnmarshaler)", v)
 	}
 }
