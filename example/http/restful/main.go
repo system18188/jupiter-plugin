@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/emicklei/go-restful"
 	"net/http"
 
 	"github.com/douyu/jupiter"
 	"github.com/douyu/jupiter/pkg/xlog"
-	"github.com/emicklei/go-restful"
 	"github.com/system18188/jupiter-plugin/server/xrestful"
 )
 

@@ -83,14 +83,14 @@ func (config *Config) WithPort(port int) *Config {
 // Build create server instance, then initialize it with necessary interceptor
 func (config *Config) Build() *Server {
 	server := newServer(config)
-	server.Filter(recoverMiddleware(config.logger, config.SlowQueryThresholdInMilli))
+	server.Container.Filter(recoverMiddleware(config.logger, config.SlowQueryThresholdInMilli))
 
 	if !config.DisableMetric {
-		server.Filter(metricServerInterceptor())
+		server.Container.Filter(metricServerInterceptor())
 	}
 
 	if !config.DisableTrace {
-		server.Filter(traceServerInterceptor())
+		server.Container.Filter(traceServerInterceptor())
 	}
 
 	if config.EnableGzip {

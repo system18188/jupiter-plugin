@@ -13,7 +13,7 @@ import (
 
 // Server ...
 type Server struct {
-	*restful.Container
+	Container *restful.Container
 	Server   *http.Server
 	config   *Config
 	listener net.Listener
@@ -34,9 +34,9 @@ func newServer(config *Config) *Server {
 
 // Serve implements server.Server interface.
 func (s *Server) Serve() error {
-	s.Router(restful.CurlyRouter{})
+	s.Container.Router(restful.CurlyRouter{})
 
-	for _, ws := range s.RegisteredWebServices() {
+	for _, ws := range s.Container.RegisteredWebServices() {
 		for _, route := range ws.Routes() {
 			s.config.logger.Info("add route", xlog.FieldMethod(route.Method), xlog.String("path", route.Path))
 		}
@@ -45,7 +45,7 @@ func (s *Server) Serve() error {
 
 	s.Server = &http.Server{
 		Addr:    s.config.Address(),
-		Handler: s,
+		Handler: s.Container,
 	}
 	err := s.Server.Serve(s.listener)
 	if err == http.ErrServerClosed {
