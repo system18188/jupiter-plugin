@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="897e8b09-7e32-42a3-8aee-e762d7331d6c" name="默认更改列表" comment="">
-      <change afterPath="$PROJECT_DIR$/pkg/protostruct/protostruct.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/xrestful/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/xrestful/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/xrestful/middleware.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/xrestful/middleware.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/xrestful/server.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/xrestful/server.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,7 +19,7 @@
       </list>
     </option>
   </component>
-  <component name="GOROOT" path="/usr/local/Cellar/go/1.15.4/libexec" />
+  <component name="GOROOT" path="$PROJECT_DIR$/../../../../go1.15.5" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -107,10 +109,10 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="2060" y="310" key="#GOROOT" timestamp="1605215770012">
+    <state x="2060" y="310" key="#GOROOT" timestamp="1606423834216">
       <screen x="1920" y="-326" width="1080" height="1920" />
     </state>
-    <state x="2060" y="310" key="#GOROOT/1920.-326.1080.1920/0.0.1920.1080@1920.-326.1080.1920" timestamp="1605215770012" />
+    <state x="2060" y="310" key="#GOROOT/1920.-326.1080.1920/0.0.1920.1080@1920.-326.1080.1920" timestamp="1606423834216" />
     <state width="1038" height="563" key="GridCell.Tab.0.bottom" timestamp="1605293104144">
       <screen x="1920" y="-326" width="1080" height="1920" />
     </state>

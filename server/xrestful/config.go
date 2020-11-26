@@ -3,23 +3,32 @@ package xrestful
 import (
 	"fmt"
 	"github.com/douyu/jupiter/pkg/conf"
+	"github.com/douyu/jupiter/pkg/constant"
 	"github.com/douyu/jupiter/pkg/ecode"
+	"github.com/douyu/jupiter/pkg/flag"
 	"github.com/douyu/jupiter/pkg/xlog"
-	"github.com/juju/errors"
+	"github.com/pkg/errors"
 )
+
+//ModName named a mod
+const ModName = "server.go-restful"
 
 // Config HTTP config
 type Config struct {
 	// 绑定地址
 	Host string `json:"host" toml:"host"`
 	// 绑定端口
-	Port int `json:"port" toml:"port"`
+	Port       int    `json:"port" toml:"port"`
+	Deployment string `json:"deployment" toml:"deployment"`
+	Debug      bool   `json:"debug" toml:"debug"`
 	// 测量请求响应时间
 	DisableMetric bool `json:"disableMetric" toml:"disableMetric"`
 	// 跟踪
 	DisableTrace bool `json:"disableTrace" toml:"disableTrace"`
 	// 开启gzip 压缩
 	EnableGzip bool `json:"enableGzip" toml:"enableGzip"`
+	// ServiceAddress service address in registry info, default to 'Host:Port'
+	ServiceAddress string `json:"serviceAddress" toml:"serviceAddress"`
 
 	SlowQueryThresholdInMilli int64 `json:"slowQueryThresholdInMilli" toml:"slowQueryThresholdInMilli"`
 
@@ -29,10 +38,12 @@ type Config struct {
 // DefaultConfig ...
 func DefaultConfig() *Config {
 	return &Config{
-		Host:                      "127.0.0.1",
+		Host:                      flag.String("host"),
 		Port:                      9091,
+		Debug:                     false,
+		Deployment:                constant.DefaultDeployment,
 		SlowQueryThresholdInMilli: 500, // 500ms
-		logger:                    xlog.JupiterLogger.With(xlog.FieldMod("server.go-restful")),
+		logger:                    xlog.JupiterLogger.With(xlog.FieldMod(ModName)),
 	}
 }
 

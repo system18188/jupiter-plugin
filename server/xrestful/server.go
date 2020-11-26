@@ -2,11 +2,11 @@ package xrestful
 
 import (
 	"context"
-	"github.com/douyu/jupiter/pkg"
+	"github.com/douyu/jupiter/pkg/constant"
 	"github.com/douyu/jupiter/pkg/ecode"
 	"github.com/douyu/jupiter/pkg/server"
 	"github.com/douyu/jupiter/pkg/xlog"
-	restful "github.com/emicklei/go-restful/v3"
+	restful "github.com/emicklei/go-restful"
 	"net"
 	"net/http"
 )
@@ -71,19 +71,18 @@ func (s *Server) GracefulStop(ctx context.Context) error {
 // Info returns server info, used by governor and consumer balancer
 // TODO(gorexlv): implements government protocol with juno
 func (s *Server) Info() *server.ServiceInfo {
-	return &server.ServiceInfo{
-		Name:      pkg.Name(),
-		Scheme:    "http",
-		IP:        s.config.Host,
-		Port:      s.config.Port,
-		Weight:    0.0,
-		Enable:    false,
-		Healthy:   false,
-		Metadata:  map[string]string{},
-		Region:    "",
-		Zone:      "",
-		GroupName: "",
+	serviceAddr := s.listener.Addr().String()
+	if s.config.ServiceAddress != "" {
+		serviceAddr = s.config.ServiceAddress
 	}
+
+	info := server.ApplyOptions(
+		server.WithScheme("http"),
+		server.WithAddress(serviceAddr),
+		server.WithKind(constant.ServiceProvider),
+	)
+	// info.Name = info.Name + "." + ModName
+	return &info
 }
 
 func (s *Server) WebService() *restful.WebService {
@@ -91,4 +90,8 @@ func (s *Server) WebService() *restful.WebService {
 
 	s.Container.Add(ws)
 	return ws
+}
+
+func (s *Server) AddWebService (ws *restful.WebService) {
+	s.Container.Add(ws)
 }

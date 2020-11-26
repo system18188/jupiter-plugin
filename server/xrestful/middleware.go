@@ -6,7 +6,7 @@ import (
 	"github.com/douyu/jupiter/pkg/metric"
 	"github.com/douyu/jupiter/pkg/trace"
 	"github.com/douyu/jupiter/pkg/xlog"
-	"github.com/emicklei/go-restful/v3"
+	"github.com/emicklei/go-restful"
 	"go.uber.org/zap"
 	"io/ioutil"
 	"net"
@@ -66,11 +66,10 @@ func recoverMiddleware(logger *xlog.Logger, slowQueryThresholdInMilli int64) res
 			fields = append(fields,
 				zap.String("method", req.Request.Method),
 				zap.Int("code", resp.StatusCode()),
-				//zap.Int("size", req.Writer.Size()),
+				zap.Int("size", resp.ContentLength()),
 				zap.String("host", req.Request.Host),
 				zap.String("path", req.Request.URL.Path),
 				zap.String("ip", clientIP(req)),
-			//zap.String("err", req.Errors.ByType(gin.ErrorTypePrivate).String()),
 			)
 			logger.Info("access", fields...)
 		}()
