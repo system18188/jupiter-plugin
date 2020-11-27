@@ -13,7 +13,7 @@ import (
 
 // Server ...
 type Server struct {
-	Container *restful.Container
+	*restful.Container
 	Server   *http.Server
 	config   *Config
 	listener net.Listener
@@ -94,4 +94,8 @@ func (s *Server) WebService() *restful.WebService {
 
 func (s *Server) AddWebService (ws *restful.WebService) {
 	s.Container.Add(ws)
+}
+
+func (s *Server) RegisteredWebServices () []*restful.WebService {
+	return s.Container.RegisteredWebServices()
 }
