@@ -6,7 +6,7 @@ import (
 	"github.com/douyu/jupiter/pkg/ecode"
 	"github.com/douyu/jupiter/pkg/server"
 	"github.com/douyu/jupiter/pkg/xlog"
-	restful "github.com/emicklei/go-restful"
+	restful "github.com/emicklei/go-restful/v3"
 	"net"
 	"net/http"
 )
