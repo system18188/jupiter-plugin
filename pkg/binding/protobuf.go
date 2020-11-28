@@ -1,7 +1,10 @@
+// Copyright 2014 Manu Martinez-Almeida.  All rights reserved.
+// Use of this source code is governed by a MIT style
+// license that can be found in the LICENSE file.
+
 package binding
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -19,10 +22,6 @@ func (b protobufBinding) Bind(req *http.Request, obj interface{}) error {
 	if err != nil {
 		return err
 	}
-	// Write Default Value
-	if err := WriteDefaultValueOnTag(obj, "form");err != nil {
-		return fmt.Errorf("WriteDefaultValueOnTag Error: %v",err.Error())
-	}
 	return b.BindBody(buf, obj)
 }
 
@@ -32,5 +31,6 @@ func (protobufBinding) BindBody(body []byte, obj interface{}) error {
 	}
 	// Here it's same to return validate(obj), but util now we can't add
 	// `binding:""` to the struct which automatically generate by gen-proto
-	return validate(obj)
+	return nil
+	// return validate(obj)
 }

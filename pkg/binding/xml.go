@@ -1,9 +1,12 @@
+// Copyright 2014 Manu Martinez-Almeida.  All rights reserved.
+// Use of this source code is governed by a MIT style
+// license that can be found in the LICENSE file.
+
 package binding
 
 import (
 	"bytes"
 	"encoding/xml"
-	"fmt"
 	"io"
 	"net/http"
 )
@@ -15,17 +18,12 @@ func (xmlBinding) Name() string {
 }
 
 func (xmlBinding) Bind(req *http.Request, obj interface{}) error {
-	// Write Default Value
-	if err := WriteDefaultValueOnTag(obj, "form");err != nil {
-		return fmt.Errorf("WriteDefaultValueOnTag Error: %v",err.Error())
-	}
 	return decodeXML(req.Body, obj)
 }
 
 func (xmlBinding) BindBody(body []byte, obj interface{}) error {
 	return decodeXML(bytes.NewReader(body), obj)
 }
-
 func decodeXML(r io.Reader, obj interface{}) error {
 	decoder := xml.NewDecoder(r)
 	if err := decoder.Decode(obj); err != nil {

@@ -1,8 +1,11 @@
+// Copyright 2018 Gin Core Team.  All rights reserved.
+// Use of this source code is governed by a MIT style
+// license that can be found in the LICENSE file.
+
 package binding
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -16,10 +19,6 @@ func (yamlBinding) Name() string {
 }
 
 func (yamlBinding) Bind(req *http.Request, obj interface{}) error {
-	// Write Default Value
-	if err := WriteDefaultValueOnTag(obj, "form");err != nil {
-		return fmt.Errorf("WriteDefaultValueOnTag Error: %v",err.Error())
-	}
 	return decodeYAML(req.Body, obj)
 }
 

@@ -1,7 +1,13 @@
+// Copyright 2017 Manu Martinez-Almeida.  All rights reserved.
+// Use of this source code is governed by a MIT style
+// license that can be found in the LICENSE file.
+
+// +build !nomsgpack
+
 package binding
 
 import (
-	"fmt"
+	"bytes"
 	"io"
 	"net/http"
 
@@ -15,11 +21,11 @@ func (msgpackBinding) Name() string {
 }
 
 func (msgpackBinding) Bind(req *http.Request, obj interface{}) error {
-	// Write Default Value
-	if err := WriteDefaultValueOnTag(obj, "form");err != nil {
-		return fmt.Errorf("WriteDefaultValueOnTag Error: %v",err.Error())
-	}
 	return decodeMsgPack(req.Body, obj)
+}
+
+func (msgpackBinding) BindBody(body []byte, obj interface{}) error {
+	return decodeMsgPack(bytes.NewReader(body), obj)
 }
 
 func decodeMsgPack(r io.Reader, obj interface{}) error {

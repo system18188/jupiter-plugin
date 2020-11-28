@@ -1,12 +1,21 @@
+// Copyright 2014 Manu Martinez-Almeida.  All rights reserved.
+// Use of this source code is governed by a MIT style
+// license that can be found in the LICENSE file.
+
 package binding
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/system18188/jupiter-plugin/pkg/convert"
 	"reflect"
 	"strconv"
 	"strings"
 	"time"
 )
+
+var errUnknownType = errors.New("unknown type")
 
 func mapUri(ptr interface{}, m map[string][]string) error {
 	return mapFormByTag(ptr, m, "uri")
@@ -16,246 +25,209 @@ func mapForm(ptr interface{}, form map[string][]string) error {
 	return mapFormByTag(ptr, form, "form")
 }
 
-func mapArray(ptr interface{}, array map[string]interface{}) error {
-	return mapArrayByTag(ptr, array, "array")
-}
+var emptyField = reflect.StructField{}
 
-// mapFormByTag 分配值 （付值struct，传入form表单值）
 func mapFormByTag(ptr interface{}, form map[string][]string, tag string) error {
-	typ := reflect.TypeOf(ptr)
-	if typ.Kind() == reflect.Ptr {
-		typ = typ.Elem()
+	// Check if ptr is a map
+	ptrVal := reflect.ValueOf(ptr)
+	var pointed interface{}
+	if ptrVal.Kind() == reflect.Ptr {
+		ptrVal = ptrVal.Elem()
+		pointed = ptrVal.Interface()
 	}
-	val := reflect.Indirect(reflect.ValueOf(ptr))
-	return mapFormByTagStruct(typ, val, form, tag)
+	if ptrVal.Kind() == reflect.Map &&
+		ptrVal.Type().Key().Kind() == reflect.String {
+		if pointed != nil {
+			ptr = pointed
+		}
+		return setFormMap(ptr, form)
+	}
+
+	return mappingByPtr(ptr, formSource(form), tag)
 }
 
-func mapFormByTagStruct(typ reflect.Type, val reflect.Value, form map[string][]string, tag string) error {
-	if typ.Kind() != reflect.Struct {
-		return nil
-	}
-	for i := 0; i < typ.NumField(); i++ {
-		typeField := typ.Field(i)
-		structField := val.Field(i)
-		// 类型为上传的文件跳过
-		if typeField.Type == tFile || typeField.Type == tFiles {
-			continue
-		}
-		// 取得绑定名称 inputFieldName
-		inputFieldName := typeField.Tag.Get(tag)
-		inputFieldNameList := strings.Split(inputFieldName, ",")
-		inputFieldName = inputFieldNameList[0]
-
-		structFieldKind := structField.Kind()
-		// 取得默认值写入 defaultValue
-		var defaultValue string
-		if len(inputFieldNameList) > 1 {
-			defaultList := strings.SplitN(inputFieldNameList[1], "=", 2)
-			if defaultList[0] == "default" {
-				defaultValue = defaultList[1]
-			}
-		}
-		// 绑定名为空时检查是否是指针与Struct
-		if structFieldKind == reflect.Ptr {
-			if !structField.Elem().IsValid() {
-				structField.Set(reflect.New(structField.Type().Elem()))
-			}
-			structField = structField.Elem()
-			structFieldKind = structField.Kind()
-		}
-		// 没有找个绑定名称 如果是struct就转到下一个struct
-		if inputFieldName == "" {
-			if structFieldKind == reflect.Struct {
-				// 其他 struct
-				err := mapFormByTagStruct(typeField.Type, structField, form, tag)
-				if err != nil {
-					return err
-				}
-			}
-			continue
-		}
-		// 按tag取得form表单值
-		inputValue, exists := form[inputFieldName]
-		if !exists {
-			if defaultValue == "" {
-				continue
-			}
-			inputValue = make([]string, 1)
-			inputValue[0] = defaultValue
-		}
-		if inputValue[0] == "" {
-			continue
-		}
-		// 给数据库类型付值
-		for keyType, vFn := range RegisterFormType.Get() {
-			if typeField.Type == keyType {
-				v, err := vFn(inputValue)
-				if err != nil {
-					return err
-				}
-				structField.Set(v)
-				continue
-			}
-		}
-
-		// 给Slice付值
-		numElems := len(inputValue)
-		if structFieldKind == reflect.Slice && numElems > 0 {
-			sliceOf := structField.Type().Elem().Kind()
-			slice := reflect.MakeSlice(structField.Type(), numElems, numElems)
-			for i := 0; i < numElems; i++ {
-				if err := setWithProperType(sliceOf, inputValue[i], slice.Index(i)); err != nil {
-					return err
-				}
-			}
-			structField.Set(slice)
-			continue
-		}
-
-		// 检查是否是时间类型并付值
-		if _, isTime := structField.Interface().(time.Time); isTime {
-			if err := setTimeField(inputValue[0], typeField, structField); err != nil {
-				return err
-			}
-			continue
-		}
-
-		if structFieldKind == reflect.Struct {
-			continue
-		}
-
-		// 检查值是否可以更改
-		if !structField.CanSet() {
-			continue
-		}
-
-		// 给其他类型付值
-		if err := setWithProperType(typeField.Type.Kind(), inputValue[0], structField); err != nil {
-			return err
-		}
-	}
-	return nil
+// setter tries to set value on a walking by fields of a struct
+type setter interface {
+	TrySet(value reflect.Value, field reflect.StructField, key string, opt setOptions) (isSetted bool, err error)
 }
 
-func mapArrayByTag(ptr interface{}, array map[string]interface{}, tag string) error {
-	typ := reflect.TypeOf(ptr).Elem()
-	val := reflect.ValueOf(ptr).Elem()
-	for i := 0; i < typ.NumField(); i++ {
-		typeField := typ.Field(i)
-		structField := val.Field(i)
-		if !structField.CanSet() {
-			continue
+type formSource map[string][]string
+
+var _ setter = formSource(nil)
+
+// TrySet tries to set a value by request's form source (like map[string][]string)
+func (form formSource) TrySet(value reflect.Value, field reflect.StructField, tagValue string, opt setOptions) (isSetted bool, err error) {
+	return setByForm(value, field, form, tagValue, opt)
+}
+
+func mappingByPtr(ptr interface{}, setter setter, tag string) error {
+	_, err := mapping(reflect.ValueOf(ptr), emptyField, setter, tag)
+	return err
+}
+
+func mapping(value reflect.Value, field reflect.StructField, setter setter, tag string) (bool, error) {
+	if field.Tag.Get(tag) == "-" { // just ignoring this field
+		return false, nil
+	}
+
+	var vKind = value.Kind()
+
+	if vKind == reflect.Ptr {
+		var isNew bool
+		vPtr := value
+		if value.IsNil() {
+			isNew = true
+			vPtr = reflect.New(value.Type().Elem())
 		}
-		structFieldKind := structField.Kind() // 取struct类型
-		inputFieldName := typeField.Tag.Get(tag)
-		inputFieldNameList := strings.Split(inputFieldName, ",") // tag 内容组
-		inputFieldName = inputFieldNameList[0]                   // tag 绑定名称
-		var defaultValue string
-		// 检查是否有设置默认值
-		if len(inputFieldNameList) > 1 {
-			defaultList := strings.SplitN(inputFieldNameList[1], "=", 2)
-			if defaultList[0] == "default" {
-				defaultValue = defaultList[1]
-			}
+		isSetted, err := mapping(vPtr.Elem(), field, setter, tag)
+		if err != nil {
+			return false, err
 		}
-		if inputFieldName == "-" {
-			continue
+		if isNew && isSetted {
+			value.Set(vPtr)
 		}
-		// 如果没有取到绑定名称取 取struct 定义名
-		if inputFieldName == "" {
-			inputFieldName = typeField.Name
-			if structFieldKind == reflect.Ptr {
-				if !structField.Elem().IsValid() {
-					structField.Set(reflect.New(structField.Type().Elem()))
-				}
-				structField = structField.Elem()
-				structFieldKind = structField.Kind()
-			}
-			if structFieldKind == reflect.Struct {
-				err := mapArray(structField.Addr().Interface(), array)
-				if err != nil {
-					return err
-				}
+		return isSetted, nil
+	}
+
+	if vKind != reflect.Struct || !field.Anonymous {
+		ok, err := tryToSetValue(value, field, setter, tag)
+		if err != nil {
+			return false, err
+		}
+		if ok {
+			return true, nil
+		}
+	}
+
+	if vKind == reflect.Struct {
+		tValue := value.Type()
+
+		var isSetted bool
+		for i := 0; i < value.NumField(); i++ {
+			sf := tValue.Field(i)
+			if sf.PkgPath != "" && !sf.Anonymous { // unexported
 				continue
 			}
+			ok, err := mapping(value.Field(i), tValue.Field(i), setter, tag)
+			if err != nil {
+				return false, err
+			}
+			isSetted = isSetted || ok
 		}
-		// 当类型一样时直接付值
-		arrVal := reflect.ValueOf(array[inputFieldName])
-		if structField.Type() == arrVal.Type() {
-			structField.Set(arrVal)
-			continue
-		}
+		return isSetted, nil
+	}
+	return false, nil
+}
 
-		// 当 float 转 int
-		if structFieldKind == reflect.Int32 && arrVal.Kind() == reflect.Float32 {
-			structField.SetInt(int64(arrVal.Float()))
-			continue
+type setOptions struct {
+	isDefaultExists bool
+	defaultValue    string
+}
+
+func tryToSetValue(value reflect.Value, field reflect.StructField, setter setter, tag string) (bool, error) {
+	var tagValue string
+	var setOpt setOptions
+
+	tagValue = field.Tag.Get(tag)
+	tagValue, opts := head(tagValue, ",")
+
+	if tagValue == "" { // default value is FieldName
+		tagValue = field.Name
+	}
+	if tagValue == "" { // when field is "emptyField" variable
+		return false, nil
+	}
+
+	var opt string
+	for len(opts) > 0 {
+		opt, opts = head(opts, ",")
+
+		if k, v := head(opt, "="); k == "default" {
+			setOpt.isDefaultExists = true
+			setOpt.defaultValue = v
 		}
-		if structFieldKind == reflect.Int64 && arrVal.Kind() == reflect.Float64 {
-			structField.SetInt(int64(arrVal.Float()))
-			continue
-		}
-		// 把类型值转为 string
-		inputValue, ok := array[inputFieldName].(string)
+	}
+
+	return setter.TrySet(value, field, tagValue, setOpt)
+}
+
+func setByForm(value reflect.Value, field reflect.StructField, form map[string][]string, tagValue string, opt setOptions) (isSetted bool, err error) {
+	vs, ok := form[tagValue]
+	if !ok && !opt.isDefaultExists {
+		return false, nil
+	}
+
+	switch value.Kind() {
+	case reflect.Slice:
 		if !ok {
-			if defaultValue == "" {
-				continue
-			}
-			inputValue = defaultValue
+			vs = []string{opt.defaultValue}
 		}
-		// 写入时间
-		if _, isTime := structField.Interface().(time.Time); isTime {
-			if err := setTimeField(inputValue, typeField, structField); err != nil {
-				return err
-			}
-			continue
+		return true, setSlice(vs, value, field)
+	case reflect.Array:
+		if !ok {
+			vs = []string{opt.defaultValue}
 		}
-		// 写入值
-		if err := setWithProperType(typeField.Type.Kind(), inputValue, structField); err != nil {
-			return err
+		if len(vs) != value.Len() {
+			return false, fmt.Errorf("%q is not valid value for %s", vs, value.Type().String())
 		}
+		return true, setArray(vs, value, field)
+	default:
+		var val string
+		if !ok {
+			val = opt.defaultValue
+		}
+
+		if len(vs) > 0 {
+			val = vs[0]
+		}
+		return true, setWithProperType(val, value, field)
 	}
-	return nil
 }
 
-func setWithProperType(valueKind reflect.Kind, val string, structField reflect.Value) error {
-	switch valueKind {
+func setWithProperType(val string, value reflect.Value, field reflect.StructField) error {
+	switch value.Kind() {
 	case reflect.Int:
-		return setIntField(val, 0, structField)
+		return setIntField(val, 0, value)
 	case reflect.Int8:
-		return setIntField(val, 8, structField)
+		return setIntField(val, 8, value)
 	case reflect.Int16:
-		return setIntField(val, 16, structField)
+		return setIntField(val, 16, value)
 	case reflect.Int32:
-		return setIntField(val, 32, structField)
+		return setIntField(val, 32, value)
 	case reflect.Int64:
-		return setIntField(val, 64, structField)
-	case reflect.Uint:
-		return setUintField(val, 0, structField)
-	case reflect.Uint8:
-		return setUintField(val, 8, structField)
-	case reflect.Uint16:
-		return setUintField(val, 16, structField)
-	case reflect.Uint32:
-		return setUintField(val, 32, structField)
-	case reflect.Uint64:
-		return setUintField(val, 64, structField)
-	case reflect.Bool:
-		return setBoolField(val, structField)
-	case reflect.Float32:
-		return setFloatField(val, 32, structField)
-	case reflect.Float64:
-		return setFloatField(val, 64, structField)
-	case reflect.String:
-		structField.SetString(val)
-	case reflect.Ptr:
-		if !structField.Elem().IsValid() {
-			structField.Set(reflect.New(structField.Type().Elem()))
+		switch value.Interface().(type) {
+		case time.Duration:
+			return setTimeDuration(val, value, field)
 		}
-		structFieldElem := structField.Elem()
-		return setWithProperType(structFieldElem.Kind(), val, structFieldElem)
+		return setIntField(val, 64, value)
+	case reflect.Uint:
+		return setUintField(val, 0, value)
+	case reflect.Uint8:
+		return setUintField(val, 8, value)
+	case reflect.Uint16:
+		return setUintField(val, 16, value)
+	case reflect.Uint32:
+		return setUintField(val, 32, value)
+	case reflect.Uint64:
+		return setUintField(val, 64, value)
+	case reflect.Bool:
+		return setBoolField(val, value)
+	case reflect.Float32:
+		return setFloatField(val, 32, value)
+	case reflect.Float64:
+		return setFloatField(val, 64, value)
+	case reflect.String:
+		value.SetString(val)
+	case reflect.Struct:
+		switch value.Interface().(type) {
+		case time.Time:
+			return setTimeField(val, field, value)
+		}
+		return json.Unmarshal(convert.StringToBytes(val), value.Addr().Interface())
+	case reflect.Map:
+		return json.Unmarshal(convert.StringToBytes(val), value.Addr().Interface())
 	default:
-		return errors.New("Unknown type")
+		return errUnknownType
 	}
 	return nil
 }
@@ -310,6 +282,24 @@ func setTimeField(val string, structField reflect.StructField, value reflect.Val
 		timeFormat = time.RFC3339
 	}
 
+	switch tf := strings.ToLower(timeFormat); tf {
+	case "unix", "unixnano":
+		tv, err := strconv.ParseInt(val, 10, 64)
+		if err != nil {
+			return err
+		}
+
+		d := time.Duration(1)
+		if tf == "unixnano" {
+			d = time.Second
+		}
+
+		t := time.Unix(tv/int64(d), tv%int64(d))
+		value.Set(reflect.ValueOf(t))
+		return nil
+
+	}
+
 	if val == "" {
 		value.Set(reflect.ValueOf(time.Time{}))
 		return nil
@@ -334,5 +324,68 @@ func setTimeField(val string, structField reflect.StructField, value reflect.Val
 	}
 
 	value.Set(reflect.ValueOf(t))
+	return nil
+}
+
+func setArray(vals []string, value reflect.Value, field reflect.StructField) error {
+	for i, s := range vals {
+		err := setWithProperType(s, value.Index(i), field)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func setSlice(vals []string, value reflect.Value, field reflect.StructField) error {
+	slice := reflect.MakeSlice(value.Type(), len(vals), len(vals))
+	err := setArray(vals, slice, field)
+	if err != nil {
+		return err
+	}
+	value.Set(slice)
+	return nil
+}
+
+func setTimeDuration(val string, value reflect.Value, field reflect.StructField) error {
+	d, err := time.ParseDuration(val)
+	if err != nil {
+		return err
+	}
+	value.Set(reflect.ValueOf(d))
+	return nil
+}
+
+func head(str, sep string) (head string, tail string) {
+	idx := strings.Index(str, sep)
+	if idx < 0 {
+		return str, ""
+	}
+	return str[:idx], str[idx+len(sep):]
+}
+
+func setFormMap(ptr interface{}, form map[string][]string) error {
+	el := reflect.TypeOf(ptr).Elem()
+
+	if el.Kind() == reflect.Slice {
+		ptrMap, ok := ptr.(map[string][]string)
+		if !ok {
+			return errors.New("cannot convert to map slices of strings")
+		}
+		for k, v := range form {
+			ptrMap[k] = v
+		}
+
+		return nil
+	}
+
+	ptrMap, ok := ptr.(map[string]string)
+	if !ok {
+		return errors.New("cannot convert to map of strings")
+	}
+	for k, v := range form {
+		ptrMap[k] = v[len(v)-1] // pick last
+	}
+
 	return nil
 }
