@@ -144,7 +144,7 @@ func NewArray() BindingArray {
 // and the content type.
 func Default(method, contentType string) Binding {
 	if method == "GET" {
-		return Form
+		return Query
 	}
 	switch contentType {
 	case MIMEJSON:
