@@ -2,35 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="897e8b09-7e32-42a3-8aee-e762d7331d6c" name="默认更改列表" comment="">
+      <change afterPath="$PROJECT_DIR$/pkg/binding/convert.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/binding/type_bool.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/binding/type_date.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/binding/type_float.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/binding/type_float_64.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/binding/type_int.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/binding/type_int32.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/binding/type_long.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/binding/type_string.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/binding/type_time.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/binding/types.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/array.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/binding.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/convert.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/default_validator.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/form.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/form_file.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/form_mapping.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/json.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/msgpack.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/plugin_validator.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/protobuf.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/query.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/type_bool.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/type_date.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/type_float.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/type_float_64.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/type_int.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/type_int32.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/type_long.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/type_string.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/type_time.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/types.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/uri.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/util.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/xml.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/binding/yaml.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/convert/unsafe.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/convert/unsafe.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/binding/default_validator.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/binding/default_validator.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/binding/form_mapping.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/binding/form_mapping.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/convert/byte.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/convert/byte.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pkg/convert/unsafe.go" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -122,9 +109,6 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="VgoProject">
-    <integration-enabled>true</integration-enabled>
-  </component>
   <component name="WindowStateProjectService">
     <state x="2060" y="310" key="#GOROOT" timestamp="1606439022194">
       <screen x="1920" y="-326" width="1080" height="1920" />
@@ -163,10 +147,10 @@
       <screen x="1920" y="-326" width="1080" height="1920" />
     </state>
     <state width="1038" height="692" key="GridCell.Tab.1.right/1920.-326.1080.1920/0.0.1920.1080@1920.-326.1080.1920" timestamp="1605293104138" />
-    <state x="1920" y="83" key="SettingsEditor" timestamp="1606539784602">
+    <state x="1920" y="83" key="SettingsEditor" timestamp="1606564834934">
       <screen x="1920" y="-326" width="1080" height="1920" />
     </state>
-    <state x="1920" y="83" key="SettingsEditor/1920.-326.1080.1920/0.0.1920.1080@1920.-326.1080.1920" timestamp="1606539784602" />
+    <state x="1920" y="83" key="SettingsEditor/1920.-326.1080.1920/0.0.1920.1080@1920.-326.1080.1920" timestamp="1606564834934" />
     <state x="293" y="230" key="SettingsEditor/1920.-44.1080.1920/0.0.1920.1080@1920.-44.1080.1920" timestamp="1602984216579" />
   </component>
   <component name="masterDetails">

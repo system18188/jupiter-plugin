@@ -89,6 +89,16 @@ func mapping(value reflect.Value, field reflect.StructField, setter setter, tag 
 		return isSetted, nil
 	}
 
+	if RegisterFormType.Exists(field.Type) {
+		ok, err := tryToSetValue(value, field, setter, tag)
+		if err != nil {
+			return false, err
+		}
+		if ok {
+			return true, nil
+		}
+	}
+
 	if vKind != reflect.Struct || !field.Anonymous {
 		ok, err := tryToSetValue(value, field, setter, tag)
 		if err != nil {
@@ -101,7 +111,6 @@ func mapping(value reflect.Value, field reflect.StructField, setter setter, tag 
 
 	if vKind == reflect.Struct {
 		tValue := value.Type()
-
 		var isSetted bool
 		for i := 0; i < value.NumField(); i++ {
 			sf := tValue.Field(i)
@@ -155,6 +164,17 @@ func setByForm(value reflect.Value, field reflect.StructField, form map[string][
 	vs, ok := form[tagValue]
 	if !ok && !opt.isDefaultExists {
 		return false, nil
+	}
+	// 给数据库类型付值
+	for keyType, vFn := range RegisterFormType.Get() {
+		if value.Type() == keyType {
+			v, err := vFn(vs)
+			if err != nil {
+				return true, err
+			}
+			value.Set(v)
+			continue
+		}
 	}
 
 	switch value.Kind() {
@@ -297,7 +317,6 @@ func setTimeField(val string, structField reflect.StructField, value reflect.Val
 		t := time.Unix(tv/int64(d), tv%int64(d))
 		value.Set(reflect.ValueOf(t))
 		return nil
-
 	}
 
 	if val == "" {
