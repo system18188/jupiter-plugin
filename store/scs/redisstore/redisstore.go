@@ -1,15 +1,10 @@
 package redisstore
 
 import (
-	"errors"
 	"sync"
 	"time"
 
 	"github.com/douyu/jupiter/pkg/client/redis"
-)
-
-var (
-	errorCommit = errors.New("scs Commit Set Redis Error")
 )
 
 // RedisStore represents the session store.
@@ -55,10 +50,7 @@ func (r *RedisStore) Find(token string) (b []byte, exists bool, err error) {
 func (r *RedisStore) Commit(token string, b []byte, expiry time.Time) error {
 	r.RWMutex.Lock()
 	defer r.RWMutex.Unlock()
-	if !r.redis.Set(r.prefix+token, b, makeMillisecondTimestamp(expiry)) {
-		return errorCommit
-	}
-	return nil
+	return r.redis.SetWithErr(r.prefix+token, b, makeMillisecondTimestamp(expiry))
 }
 
 // Delete removes a session token and corresponding data from the RedisStore
@@ -66,8 +58,8 @@ func (r *RedisStore) Commit(token string, b []byte, expiry time.Time) error {
 func (r *RedisStore) Delete(token string) error {
 	r.RWMutex.Lock()
 	defer r.RWMutex.Unlock()
-	r.redis.Del(r.prefix+token)
-	return nil
+	_, err := r.redis.DelWithErr(r.prefix+token)
+	return err
 }
 
 func makeMillisecondTimestamp(t time.Time) time.Duration {
