@@ -3,7 +3,6 @@ package scs
 import (
 	"bufio"
 	"bytes"
-	"github.com/emicklei/go-restful/v3"
 	"github.com/system18188/jupiter-plugin/store/scs/memstore"
 	"log"
 	"net"
@@ -128,34 +127,26 @@ func NewSession() *SessionManager {
 // LoadAndSave provides middleware which automatically loads and saves session
 // data for the current request, and communicates the session token to and from
 // the client in a cookie.
-func (s *SessionManager) LoadAndSave() restful.FilterFunction {
-	return func(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
+func (s *SessionManager) LoadAndSave(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var token string
-		// 取得 Cookie Value 存入token
-		cookie, err := req.Request.Cookie(s.Cookie.Name)
+		cookie, err := r.Cookie(s.Cookie.Name)
 		if err == nil {
 			token = cookie.Value
 		}
-		// 加载session 存入 context
-		ctx, err := s.Load(req.Request.Context(), token)
+
+		ctx, err := s.Load(r.Context(), token)
 		if err != nil {
-			s.ErrorFunc(resp.ResponseWriter, req.Request, err)
+			s.ErrorFunc(w, r, err)
 			return
 		}
-		// 合并context
-		req.Request = req.Request.WithContext(ctx)
 
-		// 自定义一个ResponseWriter 可参考 https://github.com/emicklei/go-restful/blob/master/examples/fulllog/restful-full-logging-filter.go#L65
-		bw := &bufferedResponseWriter{ResponseWriter: resp.ResponseWriter}
+		sr := r.WithContext(ctx)
+		bw := &bufferedResponseWriter{ResponseWriter: w}
+		next.ServeHTTP(bw, sr)
 
-		// 将自定义的ResponseWriter 复制给 resp.ResponseWriter
-		resp.ResponseWriter = bw
-
-
-
-		// content-type:multipart/form-data
-		if req.Request.MultipartForm != nil {
-			req.Request.MultipartForm.RemoveAll()
+		if sr.MultipartForm != nil {
+			sr.MultipartForm.RemoveAll()
 		}
 
 		if s.Status(ctx) != Unmodified {
@@ -172,7 +163,7 @@ func (s *SessionManager) LoadAndSave() restful.FilterFunction {
 			case Modified:
 				token, expiry, err := s.Commit(ctx)
 				if err != nil {
-					s.ErrorFunc(resp.ResponseWriter, req.Request, err)
+					s.ErrorFunc(w, r, err)
 					return
 				}
 
@@ -187,17 +178,16 @@ func (s *SessionManager) LoadAndSave() restful.FilterFunction {
 				responseCookie.MaxAge = -1
 			}
 
-			resp.Header().Add("Set-Cookie", responseCookie.String())
-			addHeaderIfMissing(resp.ResponseWriter, "Cache-Control", `no-cache="Set-Cookie"`)
-			addHeaderIfMissing(resp.ResponseWriter, "Vary", "Cookie")
+			w.Header().Add("Set-Cookie", responseCookie.String())
+			addHeaderIfMissing(w, "Cache-Control", `no-cache="Set-Cookie"`)
+			addHeaderIfMissing(w, "Vary", "Cookie")
 		}
 
 		if bw.code != 0 {
-			resp.WriteHeader(bw.code)
+			w.WriteHeader(bw.code)
 		}
-		resp.Write(bw.buf.Bytes())
-		chain.ProcessFilter(req, resp)
-	}
+		w.Write(bw.buf.Bytes())
+	})
 }
 
 func addHeaderIfMissing(w http.ResponseWriter, key, value string) {
