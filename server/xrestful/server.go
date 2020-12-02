@@ -42,7 +42,6 @@ func (s *Server) Serve() error {
 		}
 
 	}
-
 	s.Server = &http.Server{
 		Addr:    s.config.Address(),
 		Handler: s.Container,
