@@ -142,8 +142,6 @@ func (s *SessionManager) LoadAndSave() restful.FilterFunction {
 		// 合并context
 		req.Request = req.Request.WithContext(ctx)
 
-		chain.ProcessFilter(req, resp)
-
 		// content-type:multipart/form-data
 		//if req.Request.MultipartForm != nil {
 		//	req.Request.MultipartForm.RemoveAll()
@@ -182,6 +180,7 @@ func (s *SessionManager) LoadAndSave() restful.FilterFunction {
 			addHeaderIfMissing(resp.ResponseWriter, "Cache-Control", `no-cache="Set-Cookie"`)
 			addHeaderIfMissing(resp.ResponseWriter, "Vary", "Cookie")
 		}
+		chain.ProcessFilter(req, resp)
 	}
 }
 
