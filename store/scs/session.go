@@ -3,9 +3,8 @@ package scs
 import (
 	"bufio"
 	"bytes"
-	"github.com/douyu/jupiter/pkg/client/redis"
 	"github.com/emicklei/go-restful/v3"
-	"github.com/system18188/jupiter-plugin/store/scs/redisstore"
+	"github.com/system18188/jupiter-plugin/store/scs/memstore"
 	"log"
 	"net"
 	"net/http"
@@ -103,7 +102,7 @@ func New() *SessionManager {
 	s := &SessionManager{
 		IdleTimeout: 0,
 		Lifetime:    24 * time.Hour,
-		Store:       redisstore.New(redis.StdRedisConfig("default").Build()),
+		Store:       memstore.New(),
 		Codec:       GobCodec{},
 		ErrorFunc:   defaultErrorFunc,
 		contextKey:  generateContextKey(),
