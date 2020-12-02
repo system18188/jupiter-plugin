@@ -140,6 +140,7 @@ func (s *SessionManager) LoadAndSave() restful.FilterFunction {
 		ctx, err := s.Load(req.Request.Context(), token)
 		if err != nil {
 			s.ErrorFunc(resp.ResponseWriter, req.Request, err)
+			chain.ProcessFilter(req, resp)
 			return
 		}
 		// 合并context
