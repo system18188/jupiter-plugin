@@ -3,8 +3,9 @@ package scs
 import (
 	"bufio"
 	"bytes"
-	"github.com/alexedwards/scs/memstore"
-	"github.com/emicklei/go-restful"
+	"github.com/douyu/jupiter/pkg/client/redis"
+	"github.com/emicklei/go-restful/v3"
+	"github.com/system18188/jupiter-plugin/store/scs/redisstore"
 	"log"
 	"net"
 	"net/http"
@@ -102,7 +103,7 @@ func New() *SessionManager {
 	s := &SessionManager{
 		IdleTimeout: 0,
 		Lifetime:    24 * time.Hour,
-		Store:       memstore.New(),
+		Store:       redisstore.New(redis.StdRedisConfig("default").Build()),
 		Codec:       GobCodec{},
 		ErrorFunc:   defaultErrorFunc,
 		contextKey:  generateContextKey(),
@@ -136,18 +137,28 @@ func (s *SessionManager) LoadAndSave() restful.FilterFunction {
 		if err == nil {
 			token = cookie.Value
 		}
-
+		// 加载session 存入 context
 		ctx, err := s.Load(req.Request.Context(), token)
 		if err != nil {
 			s.ErrorFunc(resp.ResponseWriter, req.Request, err)
 			return
 		}
+		// 合并context
 		req.Request = req.Request.WithContext(ctx)
+
+		// 自定义一个ResponseWriter 可参考 https://github.com/emicklei/go-restful/blob/master/examples/fulllog/restful-full-logging-filter.go#L65
 		bw := &bufferedResponseWriter{ResponseWriter: resp.ResponseWriter}
-		//if req.Request.MultipartForm != nil {
-		//	req.Request.MultipartForm.RemoveAll()
-		//}
+
+		// 将自定义的ResponseWriter 复制给 resp.ResponseWriter
 		resp.ResponseWriter = bw
+
+		chain.ProcessFilter(req, resp)
+
+		// content-type:multipart/form-data
+		if req.Request.MultipartForm != nil {
+			req.Request.MultipartForm.RemoveAll()
+		}
+
 		if s.Status(ctx) != Unmodified {
 			responseCookie := &http.Cookie{
 				Name:     s.Cookie.Name,
@@ -186,7 +197,6 @@ func (s *SessionManager) LoadAndSave() restful.FilterFunction {
 			resp.WriteHeader(bw.code)
 		}
 		resp.Write(bw.buf.Bytes())
-		chain.ProcessFilter(req, resp)
 	}
 }
 
