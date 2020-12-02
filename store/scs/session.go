@@ -140,7 +140,6 @@ func (s *SessionManager) LoadAndSave() restful.FilterFunction {
 		ctx, err := s.Load(req.Request.Context(), token)
 		if err != nil {
 			s.ErrorFunc(resp.ResponseWriter, req.Request, err)
-			chain.ProcessFilter(req, resp)
 			return
 		}
 		// 合并context
@@ -152,7 +151,7 @@ func (s *SessionManager) LoadAndSave() restful.FilterFunction {
 		// 将自定义的ResponseWriter 复制给 resp.ResponseWriter
 		resp.ResponseWriter = bw
 
-		chain.ProcessFilter(req, resp)
+
 
 		// content-type:multipart/form-data
 		if req.Request.MultipartForm != nil {
@@ -197,6 +196,7 @@ func (s *SessionManager) LoadAndSave() restful.FilterFunction {
 			resp.WriteHeader(bw.code)
 		}
 		resp.Write(bw.buf.Bytes())
+		chain.ProcessFilter(req, resp)
 	}
 }
 
