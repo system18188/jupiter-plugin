@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"github.com/alexedwards/scs/memstore"
+	"github.com/emicklei/go-restful"
 	"log"
 	"net"
 	"net/http"
@@ -127,67 +128,64 @@ func NewSession() *SessionManager {
 // LoadAndSave provides middleware which automatically loads and saves session
 // data for the current request, and communicates the session token to and from
 // the client in a cookie.
-func (s *SessionManager) LoadAndSave(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var token string
-		cookie, err := r.Cookie(s.Cookie.Name)
-		if err == nil {
-			token = cookie.Value
+func (s *SessionManager) LoadAndSave(req *restful.Request, resp *restful.Response, chain *restful.FilterChain) {
+	var token string
+	// 取得 Cookie Value 存入token
+	cookie, err := req.Request.Cookie(s.Cookie.Name)
+	if err == nil {
+		token = cookie.Value
+	}
+
+	ctx, err := s.Load(req.Request.Context(), token)
+	if err != nil {
+		s.ErrorFunc(resp.ResponseWriter, req.Request, err)
+		return
+	}
+	req.Request = req.Request.WithContext(ctx)
+	bw := &bufferedResponseWriter{ResponseWriter: resp.ResponseWriter}
+	//if req.Request.MultipartForm != nil {
+	//	req.Request.MultipartForm.RemoveAll()
+	//}
+	resp.ResponseWriter = bw
+	if s.Status(ctx) != Unmodified {
+		responseCookie := &http.Cookie{
+			Name:     s.Cookie.Name,
+			Path:     s.Cookie.Path,
+			Domain:   s.Cookie.Domain,
+			Secure:   s.Cookie.Secure,
+			HttpOnly: s.Cookie.HttpOnly,
+			SameSite: s.Cookie.SameSite,
 		}
 
-		ctx, err := s.Load(r.Context(), token)
-		if err != nil {
-			s.ErrorFunc(w, r, err)
-			return
-		}
-
-		sr := r.WithContext(ctx)
-		bw := &bufferedResponseWriter{ResponseWriter: w}
-		next.ServeHTTP(bw, sr)
-
-		if sr.MultipartForm != nil {
-			sr.MultipartForm.RemoveAll()
-		}
-
-		if s.Status(ctx) != Unmodified {
-			responseCookie := &http.Cookie{
-				Name:     s.Cookie.Name,
-				Path:     s.Cookie.Path,
-				Domain:   s.Cookie.Domain,
-				Secure:   s.Cookie.Secure,
-				HttpOnly: s.Cookie.HttpOnly,
-				SameSite: s.Cookie.SameSite,
+		switch s.Status(ctx) {
+		case Modified:
+			token, expiry, err := s.Commit(ctx)
+			if err != nil {
+				s.ErrorFunc(resp.ResponseWriter, req.Request, err)
+				return
 			}
 
-			switch s.Status(ctx) {
-			case Modified:
-				token, expiry, err := s.Commit(ctx)
-				if err != nil {
-					s.ErrorFunc(w, r, err)
-					return
-				}
+			responseCookie.Value = token
 
-				responseCookie.Value = token
-
-				if s.Cookie.Persist || s.GetBool(ctx, "__rememberMe") {
-					responseCookie.Expires = time.Unix(expiry.Unix()+1, 0)        // Round up to the nearest second.
-					responseCookie.MaxAge = int(time.Until(expiry).Seconds() + 1) // Round up to the nearest second.
-				}
-			case Destroyed:
-				responseCookie.Expires = time.Unix(1, 0)
-				responseCookie.MaxAge = -1
+			if s.Cookie.Persist || s.GetBool(ctx, "__rememberMe") {
+				responseCookie.Expires = time.Unix(expiry.Unix()+1, 0)        // Round up to the nearest second.
+				responseCookie.MaxAge = int(time.Until(expiry).Seconds() + 1) // Round up to the nearest second.
 			}
-
-			w.Header().Add("Set-Cookie", responseCookie.String())
-			addHeaderIfMissing(w, "Cache-Control", `no-cache="Set-Cookie"`)
-			addHeaderIfMissing(w, "Vary", "Cookie")
+		case Destroyed:
+			responseCookie.Expires = time.Unix(1, 0)
+			responseCookie.MaxAge = -1
 		}
 
-		if bw.code != 0 {
-			w.WriteHeader(bw.code)
-		}
-		w.Write(bw.buf.Bytes())
-	})
+		resp.Header().Add("Set-Cookie", responseCookie.String())
+		addHeaderIfMissing(resp.ResponseWriter, "Cache-Control", `no-cache="Set-Cookie"`)
+		addHeaderIfMissing(resp.ResponseWriter, "Vary", "Cookie")
+	}
+
+	if bw.code != 0 {
+		resp.WriteHeader(bw.code)
+	}
+	resp.Write(bw.buf.Bytes())
+	chain.ProcessFilter(req, resp)
 }
 
 func addHeaderIfMissing(w http.ResponseWriter, key, value string) {
