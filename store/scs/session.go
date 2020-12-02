@@ -1,12 +1,9 @@
 package scs
 
 import (
-	"bufio"
-	"bytes"
 	"github.com/emicklei/go-restful/v3"
 	"github.com/system18188/jupiter-plugin/store/scs/memstore"
 	"log"
-	"net"
 	"net/http"
 	"time"
 )
@@ -145,18 +142,12 @@ func (s *SessionManager) LoadAndSave() restful.FilterFunction {
 		// 合并context
 		req.Request = req.Request.WithContext(ctx)
 
-		// 自定义一个ResponseWriter 可参考 https://github.com/emicklei/go-restful/blob/master/examples/fulllog/restful-full-logging-filter.go#L65
-		bw := &bufferedResponseWriter{ResponseWriter: resp.ResponseWriter}
-
-		// 将自定义的ResponseWriter 复制给 resp.ResponseWriter
-		resp.ResponseWriter = bw
-
 		chain.ProcessFilter(req, resp)
 
 		// content-type:multipart/form-data
-		if req.Request.MultipartForm != nil {
-			req.Request.MultipartForm.RemoveAll()
-		}
+		//if req.Request.MultipartForm != nil {
+		//	req.Request.MultipartForm.RemoveAll()
+		//}
 
 		if s.Status(ctx) != Unmodified {
 			responseCookie := &http.Cookie{
@@ -191,11 +182,6 @@ func (s *SessionManager) LoadAndSave() restful.FilterFunction {
 			addHeaderIfMissing(resp.ResponseWriter, "Cache-Control", `no-cache="Set-Cookie"`)
 			addHeaderIfMissing(resp.ResponseWriter, "Vary", "Cookie")
 		}
-
-		if bw.code != 0 {
-			resp.WriteHeader(bw.code)
-		}
-		resp.Write(bw.buf.Bytes())
 	}
 }
 
@@ -211,34 +197,4 @@ func addHeaderIfMissing(w http.ResponseWriter, key, value string) {
 func defaultErrorFunc(w http.ResponseWriter, r *http.Request, err error) {
 	log.Output(2, err.Error())
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-}
-
-type bufferedResponseWriter struct {
-	http.ResponseWriter
-	buf         bytes.Buffer
-	code        int
-	wroteHeader bool
-}
-
-func (bw *bufferedResponseWriter) Write(b []byte) (int, error) {
-	return bw.buf.Write(b)
-}
-
-func (bw *bufferedResponseWriter) WriteHeader(code int) {
-	if !bw.wroteHeader {
-		bw.code = code
-		bw.wroteHeader = true
-	}
-}
-
-func (bw *bufferedResponseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
-	hj := bw.ResponseWriter.(http.Hijacker)
-	return hj.Hijack()
-}
-
-func (bw *bufferedResponseWriter) Push(target string, opts *http.PushOptions) error {
-	if pusher, ok := bw.ResponseWriter.(http.Pusher); ok {
-		return pusher.Push(target, opts)
-	}
-	return http.ErrNotSupported
 }
