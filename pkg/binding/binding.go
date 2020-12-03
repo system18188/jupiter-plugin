@@ -6,7 +6,12 @@
 
 package binding
 
-import "net/http"
+import (
+	ut "github.com/go-playground/universal-translator"
+	"github.com/go-playground/validator/v10"
+	"net/http"
+	"reflect"
+)
 
 // Content-Type MIME of the most common data formats.
 const (
@@ -60,6 +65,15 @@ type StructValidator interface {
 	// Engine returns the underlying validator engine which powers the
 	// StructValidator implementation.
 	Engine() interface{}
+
+	// AddValidation 添加一个新的验证方法
+	AddValidation(tag string, fn func(fl validator.FieldLevel) bool) error
+
+	// AddTranslation 添加一个新的验证提示
+	AddTranslation(tag string, addfn func(ut ut.Translator) error, translatorFn func(ut ut.Translator, fe validator.FieldError) string) error
+
+	// AddValidateType 添加一个新的类型
+	AddValidateType(CustomTypeFunc func(field reflect.Value) interface{}, types ...interface{})
 }
 
 // Validator is the default validator which implements the StructValidator

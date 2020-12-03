@@ -181,3 +181,21 @@ func (v *defaultValidator) lazyinit() {
 		})
 	})
 }
+
+
+func (v *defaultValidator) AddValidation(tag string, fn func(fl validator.FieldLevel) bool) error {
+	v.lazyinit()
+	return v.validate.RegisterValidation(tag, fn)
+}
+
+func (v *defaultValidator) AddTranslation(tag string, addfn func(ut ut.Translator) error, translatorFn func(ut ut.Translator, fe validator.FieldError) string) error {
+	v.lazyinit()
+	return v.validate.RegisterTranslation(tag, v.Trans, addfn, translatorFn)
+}
+
+// AddValidateType implements validator.CustomTypeFunc
+func (v *defaultValidator) AddValidateType(CustomTypeFunc func(field reflect.Value) interface{}, types ...interface{}) {
+	v.lazyinit()
+	v.validate.RegisterCustomTypeFunc(CustomTypeFunc, types...)
+}
+
