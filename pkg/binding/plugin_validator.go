@@ -3,7 +3,6 @@ package binding
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/system18188/jupiter-plugin/pkg/check"
-	"gopkg.in/go-playground/validator.v9"
 	"regexp"
 )
 
