@@ -5,14 +5,18 @@
 package binding
 
 import (
+	"github.com/go-playground/locales/en"
+	ut "github.com/go-playground/universal-translator"
+	"github.com/go-playground/validator/v10"
+	en_translations "github.com/go-playground/validator/v10/translations/en"
 	"reflect"
 	"sync"
-
-	"github.com/go-playground/validator/v10"
 )
 
 type defaultValidator struct {
 	once     sync.Once
+	Trans    ut.Translator
+	uni      *ut.UniversalTranslator
 	validate *validator.Validate
 }
 
@@ -45,8 +49,12 @@ func (v *defaultValidator) Engine() interface{} {
 
 func (v *defaultValidator) lazyinit() {
 	v.once.Do(func() {
+		en := en.New()
+		v.uni = ut.New(en, en)
+		v.Trans, _ = v.uni.GetTranslator("en")
 		v.validate = validator.New()
 		v.validate.SetTagName("binding")
+		en_translations.RegisterDefaultTranslations(v.validate, v.Trans)
 		// 注册string数组类型
 		v.validate.RegisterCustomTypeFunc(func(field reflect.Value) interface{} {
 			if val, ok := field.Interface().(Strings); ok {
@@ -138,5 +146,38 @@ func (v *defaultValidator) lazyinit() {
 			}
 			return nil
 		}, Bool{})
+		// 添加验证HTML
+		v.validate.RegisterValidation("nohtml", IsNoHTML)
+		v.validate.RegisterTranslation("nohtml", v.Trans, func(ut ut.Translator) error {
+			return ut.Add("nohtml", "{0} You cannot include HTML tags!", true) // see universal-translator for details
+		}, func(ut ut.Translator, fe validator.FieldError) string {
+			t, _ := ut.T("nohtml", fe.Field())
+			return t
+		})
+
+		// 添加验证数据库字段名格式
+		v.validate.RegisterValidation("column", IsColumn)
+
+		// 添加验证日期 0000-00-00
+		v.validate.RegisterValidation("isDate", func(fl validator.FieldLevel) bool {
+			return dateRegex.MatchString(fl.Field().String())
+		})
+		v.validate.RegisterTranslation("isDate", v.Trans, func(ut ut.Translator) error {
+			return ut.Add("isDate", "{0} Not a date format (2000-01-01)!", true) // see universal-translator for details
+		}, func(ut ut.Translator, fe validator.FieldError) string {
+			t, _ := ut.T("isDate", fe.Field())
+			return t
+		})
+
+		// 验证日期时间格式： 0000-00-00 00:00:00
+		v.validate.RegisterValidation("isTime", func(fl validator.FieldLevel) bool {
+			return timeRegex.MatchString(fl.Field().String())
+		})
+		v.validate.RegisterTranslation("isTime", v.Trans, func(ut ut.Translator) error {
+			return ut.Add("isTime", "{0} Not a date format (2006-01-02 03:04:05)!", true) // see universal-translator for details
+		}, func(ut ut.Translator, fe validator.FieldError) string {
+			t, _ := ut.T("isTime", fe.Field())
+			return t
+		})
 	})
 }
