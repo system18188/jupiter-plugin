@@ -2,7 +2,6 @@ package dbr
 
 import (
 	"reflect"
-	"strings"
 	"time"
 )
 
@@ -249,9 +248,7 @@ func (b *selectBuilder) OrderDir(col string, isAsc bool) SelectBuilder {
 
 // Paginate adds LIMIT and OFFSET
 func (b *selectBuilder) Paginate(page, perPage uint64) SelectBuilder {
-	b.Limit(perPage)
-	b.Offset((page - 1) * perPage)
-	return b
+	return b.Paginate(page, perPage)
 }
 
 // OrderBy specifies column for ordering
@@ -294,15 +291,7 @@ func (b *selectBuilder) OrderDesc(col string) SelectStmt {
 
 // OrderSorter 字符串转排序用于列表页 格式：asc,id,name or 1,id,name
 func (b *selectBuilder) OrderSorter(sorter string) SelectStmt {
-	sorterList := strings.SplitAfterN(sorter, ",", 2)
-	if len(sorterList) == 2 {
-		if sorterList[0] == "asc" || sorterList[0] == "0" {
-			return b.OrderAsc(sorterList[1])
-		} else {
-			return b.OrderDesc(sorterList[1])
-		}
-	}
-	return b.selectStmt
+	return b.OrderSorter(sorter)
 }
 
 // As creates alias for select statement

@@ -1,5 +1,7 @@
 package dbr
 
+import "strings"
+
 // SelectStmt builds `SELECT ...`
 type SelectStmt interface {
 	Builder
@@ -251,6 +253,19 @@ func (b *selectStmt) OrderAsc(col string) SelectStmt {
 	return b
 }
 
+// OrderSorter 字符串转排序用于列表页 格式：asc,id,name or 1,id,name
+func (b *selectStmt) OrderSorter(sorter string) SelectStmt {
+	sorterList := strings.SplitAfterN(sorter, ",", 2)
+	if len(sorterList) == 2 {
+		if sorterList[0] == "asc" || sorterList[0] == "0" {
+			return b.OrderAsc(sorterList[1])
+		} else {
+			return b.OrderDesc(sorterList[1])
+		}
+	}
+	return b
+}
+
 // OrderDesc specifies columns for ordering in desc direction
 func (b *selectStmt) OrderDesc(col string) SelectStmt {
 	b.Order = append(b.Order, order(col, desc))
@@ -266,6 +281,13 @@ func (b *selectStmt) Limit(n uint64) SelectStmt {
 // Offset adds OFFSET, works only if LIMIT is set
 func (b *selectStmt) Offset(n uint64) SelectStmt {
 	b.OffsetCount = int64(n)
+	return b
+}
+
+// Paginate adds LIMIT and OFFSET
+func (b *selectStmt) Paginate(page, perPage uint64) SelectStmt {
+	b.Limit(perPage)
+	b.Offset((page - 1) * perPage)
 	return b
 }
 
