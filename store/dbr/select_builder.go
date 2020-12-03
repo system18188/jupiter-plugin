@@ -2,6 +2,7 @@ package dbr
 
 import (
 	"reflect"
+	"strings"
 	"time"
 )
 
@@ -289,6 +290,19 @@ func (b *selectBuilder) OrderAsc(col string) SelectStmt {
 
 func (b *selectBuilder) OrderDesc(col string) SelectStmt {
 	return b.selectStmt.OrderDesc(col)
+}
+
+// OrderSorter 字符串转排序用于列表页 格式：asc,id,name or 1,id,name
+func (b *selectBuilder) OrderSorter(sorter string) SelectStmt {
+	sorterList := strings.SplitAfterN(sorter, ",", 2)
+	if len(sorterList) == 2 {
+		if sorterList[0] == "asc" || sorterList[0] == "0" {
+			return b.OrderAsc(sorterList[1])
+		} else {
+			return b.OrderDesc(sorterList[1])
+		}
+	}
+	return b.selectStmt
 }
 
 // As creates alias for select statement
