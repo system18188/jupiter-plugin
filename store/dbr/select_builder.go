@@ -20,6 +20,7 @@ type SelectBuilder interface {
 	GroupBy(query interface{}) SelectBuilder
 	OrderAsc(col string) SelectStmt
 	OrderDesc(col string) SelectStmt
+	OrderSorter(sorter string) SelectStmt
 	Limit(n uint64) SelectBuilder
 	Offset(n uint64) SelectBuilder
 	ForUpdate() SelectBuilder
