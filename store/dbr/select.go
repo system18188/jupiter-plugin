@@ -14,6 +14,7 @@ type SelectStmt interface {
 	GroupBy(query interface{}) SelectStmt
 	OrderAsc(col string) SelectStmt
 	OrderDesc(col string) SelectStmt
+	OrderSorter(sorter string) SelectStmt
 	Limit(n uint64) SelectStmt
 	Offset(n uint64) SelectStmt
 	ForUpdate() SelectStmt

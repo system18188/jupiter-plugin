@@ -18,9 +18,9 @@ type SelectBuilder interface {
 	Where(query interface{}, value ...interface{}) SelectBuilder
 	Having(query interface{}, value ...interface{}) SelectBuilder
 	GroupBy(query interface{}) SelectBuilder
-	OrderAsc(col string) SelectStmt
-	OrderDesc(col string) SelectStmt
-	OrderSorter(sorter string) SelectStmt
+	OrderAsc(col string) SelectBuilder
+	OrderDesc(col string) SelectBuilder
+	OrderSorter(sorter string) SelectBuilder
 	Limit(n uint64) SelectBuilder
 	Offset(n uint64) SelectBuilder
 	ForUpdate() SelectBuilder
@@ -282,17 +282,20 @@ func (b *selectBuilder) InTimezone(loc *time.Location) SelectBuilder {
 	return b
 }
 
-func (b *selectBuilder) OrderAsc(col string) SelectStmt {
-	return b.selectStmt.OrderAsc(col)
+func (b *selectBuilder) OrderAsc(col string) SelectBuilder {
+	b.selectStmt.OrderAsc(col)
+	return b
 }
 
-func (b *selectBuilder) OrderDesc(col string) SelectStmt {
-	return b.selectStmt.OrderDesc(col)
+func (b *selectBuilder) OrderDesc(col string) SelectBuilder {
+	b.selectStmt.OrderDesc(col)
+	return b
 }
 
 // OrderSorter 字符串转排序用于列表页 格式：asc,id,name or 1,id,name
-func (b *selectBuilder) OrderSorter(sorter string) SelectStmt {
-	return b.OrderSorter(sorter)
+func (b *selectBuilder) OrderSorter(sorter string) SelectBuilder {
+	b.selectStmt.OrderSorter(sorter)
+	return b
 }
 
 // As creates alias for select statement
