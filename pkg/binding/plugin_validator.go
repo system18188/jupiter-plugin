@@ -1,7 +1,7 @@
 package binding
 
 import (
-	"github.com/go-playground/validator/v10"
+	validator "github.com/go-playground/validator/v10"
 	"github.com/system18188/jupiter-plugin/pkg/check"
 	"regexp"
 )
