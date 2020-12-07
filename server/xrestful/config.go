@@ -7,6 +7,7 @@ import (
 	"github.com/douyu/jupiter/pkg/ecode"
 	"github.com/douyu/jupiter/pkg/flag"
 	"github.com/douyu/jupiter/pkg/xlog"
+	restful "github.com/emicklei/go-restful/v3"
 	"github.com/pkg/errors"
 )
 
@@ -83,18 +84,18 @@ func (config *Config) WithPort(port int) *Config {
 // Build create server instance, then initialize it with necessary interceptor
 func (config *Config) Build() *Server {
 	server := newServer(config)
-	server.Container.Filter(recoverMiddleware(config.logger, config.SlowQueryThresholdInMilli))
+	restful.DefaultContainer.Filter(recoverMiddleware(config.logger, config.SlowQueryThresholdInMilli))
 
 	if !config.DisableMetric {
-		server.Container.Filter(metricServerInterceptor())
+		restful.DefaultContainer.Filter(metricServerInterceptor())
 	}
 
 	if !config.DisableTrace {
-		server.Container.Filter(traceServerInterceptor())
+		restful.DefaultContainer.Filter(traceServerInterceptor())
 	}
 
 	if config.EnableGzip {
-		server.Container.EnableContentEncoding(true)
+		restful.DefaultContainer.EnableContentEncoding(true)
 	}
 	return server
 }

@@ -13,7 +13,6 @@ import (
 
 // Server ...
 type Server struct {
-	*restful.Container
 	Server   *http.Server
 	config   *Config
 	listener net.Listener
@@ -26,7 +25,6 @@ func newServer(config *Config) *Server {
 	}
 	config.Port = listener.Addr().(*net.TCPAddr).Port
 	return &Server{
-		Container: restful.NewContainer(),
 		config:    config,
 		listener:  listener,
 	}
@@ -34,9 +32,8 @@ func newServer(config *Config) *Server {
 
 // Serve implements server.Server interface.
 func (s *Server) Serve() error {
-	s.Container.Router(restful.CurlyRouter{})
 
-	for _, ws := range s.Container.RegisteredWebServices() {
+	for _, ws := range restful.DefaultContainer.RegisteredWebServices() {
 		for _, route := range ws.Routes() {
 			s.config.logger.Info("add route", xlog.FieldMethod(route.Method), xlog.String("path", route.Path))
 		}
@@ -44,7 +41,7 @@ func (s *Server) Serve() error {
 	}
 	s.Server = &http.Server{
 		Addr:    s.config.Address(),
-		Handler: s.Container,
+		Handler: restful.DefaultContainer,
 	}
 	err := s.Server.Serve(s.listener)
 	if err == http.ErrServerClosed {
@@ -82,19 +79,4 @@ func (s *Server) Info() *server.ServiceInfo {
 	)
 	// info.Name = info.Name + "." + ModName
 	return &info
-}
-
-func (s *Server) WebService() *restful.WebService {
-	ws := new(restful.WebService)
-
-	s.Container.Add(ws)
-	return ws
-}
-
-func (s *Server) AddWebService (ws *restful.WebService) {
-	s.Container.Add(ws)
-}
-
-func (s *Server) RegisteredWebServices () []*restful.WebService {
-	return s.Container.RegisteredWebServices()
 }
