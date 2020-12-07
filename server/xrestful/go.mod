@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/douyu/jupiter v0.2.7
-	github.com/emicklei/go-restful/v3 v3.4.0
+	github.com/emicklei/go-restful v0.0.0-20170410110728-ff4f55a20633
 	github.com/golang/protobuf v1.4.3
 	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.16.0
