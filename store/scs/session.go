@@ -1,7 +1,7 @@
 package scs
 
 import (
-	"github.com/emicklei/go-restful/v3"
+	"github.com/emicklei/go-restful"
 	"github.com/system18188/jupiter-plugin/store/scs/memstore"
 	"log"
 	"net/http"
